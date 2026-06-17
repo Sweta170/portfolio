@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    window.addEventListener('error', function(e) {
+      var div = document.createElement('div');
+      div.className = 'debug-error-toast';
+      div.style.cssText = 'position: fixed; bottom: 80px; left: 20px; background: rgba(244, 63, 94, 0.95); color: white; padding: 12px 18px; z-index: 999999; font-family: monospace; font-size: 11px; border-radius: 6px; max-width: 350px; word-break: break-all; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);';
+      div.innerHTML = '<strong>JS Error:</strong> ' + e.message + '<br><small>in ' + e.filename.split("/").pop() + ':' + e.lineno + '</small>';
+      document.body.appendChild(div);
+      setTimeout(function() { div.style.opacity = '0'; div.style.transition = 'opacity 1s ease'; setTimeout(function() { div.remove(); }, 1000); }, 8000);
+    });
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sweta Kumari | Full Stack Developer & Software Engineer</title>
+  <meta name="description" content="Full Stack MERN Developer and Software Engineer specializing in React, Node.js, AI integration, and real-time systems. Published IEEE research author." />
+  <meta name="author" content="Sweta Kumari" />
+  <meta name="keywords" content="Full Stack Developer, MERN Stack, React, Node.js, Software Engineer, AI, Machine Learning, MongoDB, Express, Portfolio" />
+  <meta name="creator" content="Sweta Kumari" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Sweta Kumari | Full Stack Developer & Software Engineer" />
+  <meta property="og:description" content="Full Stack MERN Developer specializing in React, Node.js, AI integration, and real-time systems." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sweta Kumari | Full Stack Developer" />
+  <meta name="twitter:description" content="MERN Stack Developer & IEEE Research Author" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sweta Kumari Portfolio",
+    "description": "Full Stack MERN Developer specializing in React, Node.js, AI integration, and real-time systems.",
+    "url": "https://swetakumari.dev",
+    "author": {
+      "@type": "Person",
+      "name": "Sweta Kumari",
+      "jobTitle": "Full Stack Developer",
+      "sameAs": [
+        "https://github.com/Sweta170",
+        "https://www.linkedin.com/in/sweta17/"
+      ]
+    }
+  }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════ CUSTOM CURSOR ═══════════════════ -->
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-outline" id="cursor-outline"></div>
+
+  <!-- ═══════════════════ SCROLL PROGRESS ═══════════════════ -->
+  <div id="scroll-progress"></div>
+
+  <!-- ═══════════════════ PRELOADER ═══════════════════ -->
+  <div id="preloader">
+    <div class="wave-container">
+      <svg width="240" height="100" viewBox="0 0 240 100">
+        <rect x="10" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0s infinite; opacity: 0.88"></rect>
+        <rect x="21" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.04s infinite; opacity: 0.89"></rect>
+        <rect x="32" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.08s infinite; opacity: 0.90"></rect>
+        <rect x="43" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.12s infinite; opacity: 0.91"></rect>
+        <rect x="54" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.16s infinite; opacity: 0.93"></rect>
+        <rect x="65" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.20s infinite; opacity: 0.94"></rect>
+        <rect x="76" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.24s infinite; opacity: 0.95"></rect>
+        <rect x="87" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.28s infinite; opacity: 0.96"></rect>
+        <rect x="98" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.32s infinite; opacity: 0.98"></rect>
+        <rect x="109" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.36s infinite; opacity: 0.99"></rect>
+        <rect x="120" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.40s infinite; opacity: 1.0"></rect>
+        <rect x="131" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.44s infinite; opacity: 0.99"></rect>
+        <rect x="142" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.48s infinite; opacity: 0.98"></rect>
+        <rect x="153" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.52s infinite; opacity: 0.96"></rect>
+        <rect x="164" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.56s infinite; opacity: 0.95"></rect>
+        <rect x="175" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.60s infinite; opacity: 0.94"></rect>
+        <rect x="186" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.64s infinite; opacity: 0.93"></rect>
+        <rect x="197" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.68s infinite; opacity: 0.91"></rect>
+        <rect x="208" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.72s infinite; opacity: 0.90"></rect>
+        <rect x="219" y="42" width="3" height="16" rx="1.5" fill="white" style="animation: heartbeat 0.8s ease-in-out 0.76s infinite; opacity: 0.89"></rect>
+      </svg>
+    </div>
+    <div class="welcome-text">
+      <span class="letter" style="white-space: normal">H</span><span class="letter" style="white-space: normal">i</span><span class="letter" style="white-space: normal">,</span><span class="letter" style="white-space: pre"> </span><span class="letter" style="white-space: normal">W</span><span class="letter" style="white-space: normal">e</span><span class="letter" style="white-space: normal">l</span><span class="letter" style="white-space: normal">c</span><span class="letter" style="white-space: normal">o</span><span class="letter" style="white-space: normal">m</span><span class="letter" style="white-space: normal">e</span>
+    </div>
+  </div>
+
+  <!-- Iris transition overlay -->
+  <div id="iris-overlay"></div>
+
+  <!-- ═══════════════════ PARTICLE CANVAS ═══════════════════ -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- ═══════════════════ BORDER FRAME ═══════════════════ -->
+  <div class="border-frame"></div>
+
+  <!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+  <nav id="main-nav">
+    <div class="nav-container">
+      <div class="nav-indicator"></div>
+      <a class="nav-link active" href="#home" id="nav-home">Home</a>
+      <a class="nav-link" href="#work" id="nav-work">Work</a>
+      <a class="nav-link" href="#about" id="nav-about">About</a>
+      <a class="nav-link" href="#contact" id="nav-contact">Contact</a>
+      <button class="nav-link muted" id="sound-nav-btn" title="Toggle UI Sound" style="border: none; background: none; font-family: inherit; font-size: 0.85rem; cursor: pointer;">🔇 Mute</button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════ SPEED SIDEBAR ═══════════════════ -->
+  <div id="speed-sidebar">
+    <div class="sidebar-hemisphere">
+      <svg width="100%" height="50vh" viewBox="0 0 120 400" class="drop-shadow-2xl">
+        <defs>
+          <linearGradient id="hemisphereGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.95)" />
+            <stop offset="100%" stop-color="rgba(255,255,255,0.85)" />
+          </linearGradient>
+        </defs>
+        <path d="M 0 0 L 0 400 A 80 200 0 0 0 0 0 Z" fill="url(#hemisphereGradient)" opacity="0.95" />
+        <path d="M 0 0 L 0 400 A 80 200 0 0 0 0 0 Z" fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="1" />
+      </svg>
+      <div class="sidebar-controls">
+        <div style="margin-bottom: 0.5rem; text-align: center;">
+          <div class="speed-label">Faster</div>
+          <div class="speed-value">1.0</div>
+        </div>
+        <div class="speed-slider-track">
+          <div class="speed-slider-rail"></div>
+          <div class="speed-slider-fill"></div>
+          <div class="speed-slider-thumb"></div>
+          <div class="speed-tick" style="bottom: 0%"></div>
+          <div class="speed-tick" style="bottom: 25%"></div>
+          <div class="speed-tick" style="bottom: 50%"></div>
+          <div class="speed-tick" style="bottom: 75%"></div>
+          <div class="speed-tick" style="bottom: 100%"></div>
+        </div>
+        <div style="text-align: center;">
+          <div class="speed-label">Steady</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
+  <div id="main-content">
+    <div class="scroll-container">
+
+      <!-- ─── HOME: Section 1 - Hero ─── -->
+      <section class="scroll-section" id="home" data-page="home" data-section-num="01 / 05">
+        <div class="hero-name">
+          SWETA KUMARI
+          <span class="subtitle">Software Engineer</span>
+        </div>
+
+        <!-- Central interactive WebGL Crystal placeholder -->
+        <div class="hero-3d-spacer"></div>
+
+        <!-- Hero CTA buttons -->
+        <div class="hero-ctas">
+          <a href="#contact" class="cta-btn primary-cta magnetic-btn">Start Project</a>
+          <a href="#work" class="cta-btn secondary-cta magnetic-btn">Explore Work</a>
+        </div>
+
+        <div class="section-text-bottom right" style="display: flex; flex-direction: column; align-items: flex-end; gap: 1rem;">
+          <div style="max-width: 55%; opacity: 0.8;">
+            <p style="font-weight: 300; text-align: right; font-size: clamp(0.8rem, 1.5vw, 1.1rem);">Here's my take, whether it's building software or processes.</p>
+          </div>
+          <div class="big-text">Perceive. Design. Develop</div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="scroll-indicator" id="scroll-indicator">
+          <span>Scroll</span>
+          <div class="scroll-arrow"></div>
+        </div>
+      </section>
+
+      <!-- ─── HOME: Section 2 ─── -->
+      <section class="scroll-section" data-page="home" data-section-num="02 / 05">
+        <div class="section-text-top left">
+          <p><b>Asking questions</b> is important!<br>Building isn't hard, knowing <b>what and how</b> to build is.</p>
+        </div>
+        <div class="section-text-bottom right">
+          <div class="big-text">Reliability comes from consistency<br>Consistency comes from clarity</div>
+        </div>
+      </section>
+
+      <!-- ─── HOME: Section 3 ─── -->
+      <section class="scroll-section" data-page="home" data-section-num="03 / 05">
+        <div class="section-text-top right">
+          <p>Yes AI can code and refactor. But can it think for us?<br>Testing and Developing only what's <b>needed.</b></p>
+        </div>
+        <div class="section-text-bottom left">
+          <div class="big-text">Do we need code..? or solutions?</div>
+        </div>
+      </section>
+
+      <!-- ─── HOME: Section 4 ─── -->
+      <section class="scroll-section" data-page="home" data-section-num="04 / 05">
+        <div class="section-text-top left">
+          <p>Change is part of building.<br>Building workflows, code and processes that <b>expect change</b>.</p>
+        </div>
+        <div class="section-text-bottom right">
+          <div class="big-text">Cause &amp; Effect</div>
+        </div>
+      </section>
+
+      <!-- ─── HOME: Section 5 ─── -->
+      <section class="scroll-section" data-page="home" data-section-num="05 / 05">
+        <div class="section-text-top right">
+          <p>Adapting to the pace of development environments.<br>Sounds Interesting? <a href="#contact" style="font-weight: 700; color: #00d4ff;">Let's connect..</a></p>
+        </div>
+        <div class="section-text-bottom left">
+          <div class="big-text">You be the perception, I'll be the tool</div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ WORK / PROJECTS ═══════════════════ -->
+      <section class="page-section" id="work" data-page="work">
+        <div class="section-header animate-on-scroll">
+          <div class="section-badge">Portfolio</div>
+          <h1 class="section-title">Featured <span class="gradient-text">Work</span></h1>
+          <p class="section-subtitle">Projects that showcase my expertise in full-stack development, AI integration, and system design.</p>
+        </div>
+
+        <!-- Featured Project: Pharma Desk -->
+        <div class="featured-project animate-on-scroll delay-1" id="project-pharma">
+          <div class="featured-content">
+            <div class="featured-badge">⭐ Featured Project</div>
+            <h2 class="featured-title">Pharma Desk</h2>
+            <p class="featured-subtitle">Intelligent Pharmacy Management Portal</p>
+            <div class="featured-highlights">
+              <div class="highlight-item">Multi-role system (Superadmin, Pharmacist, Customer)</div>
+              <div class="highlight-item">OCR-powered medicine registration</div>
+              <div class="highlight-item">Inventory and billing management</div>
+              <div class="highlight-item">PDF invoice generation</div>
+              <div class="highlight-item">Automated stock & expiry monitoring</div>
+              <div class="highlight-item">Email & browser medication reminders</div>
+              <div class="highlight-item">Sales analytics dashboard</div>
+              <div class="highlight-item">Compliance-based checkout protection</div>
+            </div>
+            <div class="tech-stack">
+              <span class="tech-tag">React 19</span>
+              <span class="tech-tag">Node.js</span>
+              <span class="tech-tag">Express.js</span>
+              <span class="tech-tag">MongoDB</span>
+              <span class="tech-tag">Tesseract.js</span>
+              <span class="tech-tag">PDFKit</span>
+              <span class="tech-tag">Node-Cron</span>
+              <span class="tech-tag">Nodemailer</span>
+              <span class="tech-tag">JWT</span>
+              <span class="tech-tag">Tailwind CSS</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/Sweta170/AI-based_medicine_quality" target="_blank" rel="noopener" class="project-link primary">
+                View Source ↗
+              </a>
+              <a href="https://ai-based-medicine-quality.vercel.app/" target="_blank" rel="noopener" class="project-link secondary">
+                Live Demo →
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Grid -->
+        <div class="projects-grid">
+
+          <!-- MeetAI -->
+          <div class="project-card tilt-card animate-on-scroll delay-2" id="project-meetai">
+            <div class="tilt-shine"></div>
+            <div class="project-card-icon">🤖</div>
+            <h3 class="project-card-title">MeetAI</h3>
+            <p class="project-card-desc">AI Smart Meeting Scheduler with Claude 3.5 Sonnet, Google Calendar sync, conflict detection, and natural language meeting creation.</p>
+            <div class="tech-stack">
+              <span class="tech-tag">MERN</span>
+              <span class="tech-tag">Claude API</span>
+              <span class="tech-tag">Google Calendar</span>
+              <span class="tech-tag">OAuth 2.0</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/Sweta170/AI-smart-Scheduler" target="_blank" rel="noopener" class="project-link secondary">Source ↗</a>
+              <a href="https://ai-smart-scheduler.vercel.app/" target="_blank" rel="noopener" class="project-link secondary">Demo →</a>
+            </div>
+          </div>
+
+          <!-- Retail Store Intelligence -->
+          <div class="project-card tilt-card animate-on-scroll delay-3" id="project-retail">
+            <div class="tilt-shine"></div>
+            <div class="project-card-icon" style="background: var(--gradient-secondary);">📊</div>
+            <h3 class="project-card-title">Retail Store Intelligence</h3>
+            <p class="project-card-desc">Agent-driven retail analytics with visitor session reconstruction, conversion funnel analysis, heatmap generation, and anomaly detection.</p>
+            <div class="tech-stack">
+              <span class="tech-tag">FastAPI</span>
+              <span class="tech-tag">PostgreSQL</span>
+              <span class="tech-tag">Streamlit</span>
+              <span class="tech-tag">Docker</span>
+              <span class="tech-tag">Python</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/Sweta170/store-intelligence-purplle" target="_blank" rel="noopener" class="project-link secondary">Source ↗</a>
+            </div>
+          </div>
+
+          <!-- JanSoochna -->
+          <div class="project-card tilt-card animate-on-scroll delay-4" id="project-jansoochna">
+            <div class="tilt-shine"></div>
+            <div class="project-card-icon" style="background: linear-gradient(135deg, #f59e0b, #f43f5e);">🏙️</div>
+            <h3 class="project-card-title">JanSoochna</h3>
+            <p class="project-card-desc">Hyperlocal Civic Engagement Portal with real-time issue reporting, interactive maps, AI chatbot, and petition generation.</p>
+            <div class="tech-stack">
+              <span class="tech-tag">MERN</span>
+              <span class="tech-tag">Socket.io</span>
+              <span class="tech-tag">Leaflet Maps</span>
+              <span class="tech-tag">Claude API</span>
+              <span class="tech-tag">Cloudinary</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/Sweta170/Jansoochna" target="_blank" rel="noopener" class="project-link secondary">Source ↗</a>
+              <a href="https://client-alpha-flame.vercel.app/" target="_blank" rel="noopener" class="project-link secondary">Demo →</a>
+            </div>
+          </div>
+
+          <!-- Urban Eats -->
+          <div class="project-card tilt-card animate-on-scroll delay-5" id="project-urbaneats">
+            <div class="tilt-shine"></div>
+            <div class="project-card-icon" style="background: linear-gradient(135deg, #f43f5e, #8b5cf6);">🍔</div>
+            <h3 class="project-card-title">Urban Eats</h3>
+            <p class="project-card-desc">Full-featured food delivery platform with Stripe payments, real-time order tracking, restaurant dashboard, and promotion engine.</p>
+            <div class="tech-stack">
+              <span class="tech-tag">MERN</span>
+              <span class="tech-tag">Socket.io</span>
+              <span class="tech-tag">Stripe</span>
+              <span class="tech-tag">JWT</span>
+              <span class="tech-tag">Nodemailer</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/Sweta170/urban-eats" target="_blank" rel="noopener" class="project-link secondary">Source ↗</a>
+              <a href="https://urban-eats-dusky.vercel.app/" target="_blank" rel="noopener" class="project-link secondary">Demo →</a>
+            </div>
+          </div>
+
+          <!-- Team Task Manager -->
+          <div class="project-card tilt-card animate-on-scroll delay-6" id="project-taskmanager">
+            <div class="tilt-shine"></div>
+            <div class="project-card-icon" style="background: linear-gradient(135deg, #3b82f6, #10b981);">📋</div>
+            <h3 class="project-card-title">Team Task Manager</h3>
+            <p class="project-card-desc">Project and task management with Kanban workflow, role-based access control, dashboard analytics, and dark/light themes.</p>
+            <div class="tech-stack">
+              <span class="tech-tag">React 19</span>
+              <span class="tech-tag">Express 5</span>
+              <span class="tech-tag">MongoDB</span>
+              <span class="tech-tag">Recharts</span>
+              <span class="tech-tag">Tailwind CSS</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/Sweta170/task-manager" target="_blank" rel="noopener" class="project-link secondary">Source ↗</a>
+              <a href="https://task-manager-yeyz.vercel.app/" target="_blank" rel="noopener" class="project-link secondary">Demo →</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══════════════════ ABOUT ═══════════════════ -->
+      <section class="page-section" id="about" data-page="about">
+        <div class="section-header animate-on-scroll">
+          <div class="section-badge">About</div>
+          <h2 class="section-title">Who I <span class="gradient-text">Am</span></h2>
+          <p class="section-subtitle">A final-year student passionate about building real-world solutions.</p>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-photo-wrapper animate-slide-left">
+            <div class="about-photo tilt-card" id="about-canvas-container" style="position: relative; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-light); overflow: hidden;">
+              <div class="tilt-shine"></div>
+              <canvas id="about-3d-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+          </div>
+
+          <div class="animate-slide-right">
+            <h3 class="about-name">Sweta Kumari</h3>
+            <div class="about-role">MERN Full Stack Developer • AI Integration Specialist • Freelancer</div>
+            <p class="about-bio">
+              I'm a final-year engineering student and Full Stack MERN Developer specializing in building high-performance, client-focused web applications. From building intelligent management portals with OCR to creating AI-powered meeting schedulers — I deliver robust web architectures tailored to business goals.
+              <br><br>
+              As a freelance engineer, my focus is on writing clean code, implementing seamless integrations (Stripe, Google APIs, Socket.io, JWT auth), and providing modern, responsive UIs. I'm published at IEEE in machine learning and computer vision, bridging deep analytical skills with practical product delivery.
+            </p>
+
+            <div class="about-stats">
+              <div class="stat-item">
+                <div class="stat-number" data-count="6" data-suffix="+">0+</div>
+                <div class="stat-label">Projects</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number" data-count="1">0</div>
+                <div class="stat-label">IEEE Paper</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number" data-count="15" data-suffix="+">0+</div>
+                <div class="stat-label">Technologies</div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <a href="https://github.com/Sweta170" target="_blank" rel="noopener" class="resume-btn">
+                <span>🐙</span> GitHub
+              </a>
+              <a href="https://www.linkedin.com/in/sweta17/" target="_blank" rel="noopener" class="resume-btn">
+                <span>💼</span> LinkedIn
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Research & Publication -->
+        <div class="research-card animate-on-scroll" id="research-section">
+          <div class="research-icon">🏆</div>
+          <div class="research-venue">IEEE Xplore • 2026 5th International Conference</div>
+          <h3 class="research-title">
+            <a href="https://github.com/Sweta170/certificates/blob/main/ICCCES-1046.pdf" target="_blank" rel="noopener" style="transition: color var(--transition-fast);" onmouseover="this.style.color='var(--accent-purple)'" onmouseout="this.style.color='var(--text-primary)'">
+              A Comprehensive Review Paper on Smart Attendance System Using Machine Learning <span style="font-size: 0.85rem; opacity: 0.7;">↗</span>
+            </a>
+          </h3>
+          <p class="research-description">
+            Published a peer-reviewed research paper analyzing the evolution of smart attendance systems powered by machine learning and computer vision. Conducted an extensive review of traditional face recognition techniques such as Haar Cascades and LBPH, and modern deep learning architectures including VGG16, FaceNet, DenseNet, and CNN-based recognition systems. Evaluated challenges, accuracy improvements, scalability considerations, and real-world deployment scenarios.
+          </p>
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1.5rem; margin-top: 1.25rem;">
+            <div class="research-tags" style="margin-top: 0;">
+              <span class="research-tag">Machine Learning</span>
+              <span class="research-tag">Deep Learning</span>
+              <span class="research-tag">Computer Vision</span>
+              <span class="research-tag">Face Recognition</span>
+              <span class="research-tag">CNN</span>
+              <span class="research-tag">VGG16</span>
+              <span class="research-tag">FaceNet</span>
+              <span class="research-tag">Academic Publishing</span>
+            </div>
+            <a href="https://github.com/Sweta170/certificates/blob/main/ICCCES-1046.pdf" target="_blank" rel="noopener" class="resume-btn" style="padding: 0.45rem 1rem; font-size: 0.72rem; border-color: rgba(139, 92, 246, 0.4); background: rgba(139, 92, 246, 0.05); color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+              <span>📄</span> Acceptance Letter ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Education -->
+        <div class="education-card animate-on-scroll" id="education-section">
+          <div class="education-icon">🎓</div>
+          <div class="education-venue">Lovely Professional University • 2022 – 2026</div>
+          <h3 class="education-title">Bachelor of Technology (B.Tech) in Computer Science &amp; Engineering</h3>
+          <p class="education-description">
+            Acquiring a solid foundation in core Computer Science principles, including Data Structures, Algorithms, Software Engineering, Database Systems, and Computer Networks. Specialized coursework in Web Architecture (MERN Stack) and Artificial Intelligence, including Machine Learning and Computer Vision algorithms.
+          </p>
+          <div class="education-details-grid">
+            <div class="edu-detail-item">
+              <span class="edu-detail-label">CGPA / Grade:</span>
+              <span class="edu-detail-value">8.5 / 10.0 (Ongoing B.Tech Program)</span>
+            </div>
+            <div class="edu-detail-item">
+              <span class="edu-detail-label">Key Core Subjects:</span>
+              <span class="edu-detail-value">Data Structures &amp; Algorithms, Object-Oriented Programming, Database Management Systems, Operating Systems, Web Application Development, Artificial Intelligence &amp; ML</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Certifications Section -->
+        <div class="certifications-section animate-on-scroll">
+          <div class="section-header" style="margin-bottom: 2.5rem; margin-top: 4rem;">
+            <h2 class="section-title" style="font-size: clamp(1.5rem, 3vw, 2.5rem);">Certifications &amp; <span class="gradient-text">Credentials</span></h2>
+          </div>
+          
+          <div class="certifications-grid">
+            
+            <!-- Cert 1: Generative AI -->
+            <a href="https://github.com/Sweta170/certificates/blob/main/generative%20ai%20for%20everyone.pdf" target="_blank" rel="noopener" class="cert-card tilt-card">
+              <div class="tilt-shine"></div>
+              <div class="cert-icon">🧠</div>
+              <h4 class="cert-title">Generative AI for Everyone</h4>
+              <p class="cert-issuer">DeepLearning.AI • Coursera</p>
+              <span class="cert-tag">Artificial Intelligence</span>
+            </a>
+
+            <!-- Cert 2: LLM -->
+            <a href="https://github.com/Sweta170/certificates/blob/main/llm%20certificate.pdf" target="_blank" rel="noopener" class="cert-card tilt-card">
+              <div class="tilt-shine"></div>
+              <div class="cert-icon">🤖</div>
+              <h4 class="cert-title">Large Language Models (LLMs)</h4>
+              <p class="cert-issuer">AI Integration &amp; Engineering</p>
+              <span class="cert-tag">NLP / LLMs</span>
+            </a>
+
+            <!-- Cert 3: Full Stack -->
+            <a href="https://github.com/Sweta170/certificates/blob/main/fullstack.png" target="_blank" rel="noopener" class="cert-card tilt-card">
+              <div class="tilt-shine"></div>
+              <div class="cert-icon">💻</div>
+              <h4 class="cert-title">Full-Stack Web Development</h4>
+              <p class="cert-issuer">MERN Architecture Specialist</p>
+              <span class="cert-tag">Web Development</span>
+            </a>
+
+            <!-- Cert 4: Problem Solving -->
+            <a href="https://github.com/Sweta170/certificates/blob/main/problem_solving_basic%20certificate.pdf" target="_blank" rel="noopener" class="cert-card tilt-card">
+              <div class="tilt-shine"></div>
+              <div class="cert-icon">🏆</div>
+              <h4 class="cert-title">Problem Solving (Basic)</h4>
+              <p class="cert-issuer">HackerRank Certification</p>
+              <span class="cert-tag">Algorithms &amp; DSA</span>
+            </a>
+
+            <!-- Cert 5: DevOps -->
+            <a href="https://github.com/Sweta170/certificates/blob/main/Devops-certificate.pdf" target="_blank" rel="noopener" class="cert-card tilt-card">
+              <div class="tilt-shine"></div>
+              <div class="cert-icon">🐳</div>
+              <h4 class="cert-title">DevOps &amp; Continuous Integration</h4>
+              <p class="cert-issuer">Docker &amp; Automated Pipelines</p>
+              <span class="cert-tag">CI/CD &amp; DevOps</span>
+            </a>
+
+            <!-- Cert 6: Algorithm Toolbox -->
+            <a href="https://github.com/Sweta170/certificates/blob/main/Algorithm%20toolbox.pdf" target="_blank" rel="noopener" class="cert-card tilt-card">
+              <div class="tilt-shine"></div>
+              <div class="cert-icon">📊</div>
+              <h4 class="cert-title">Algorithmic Toolbox</h4>
+              <p class="cert-issuer">UC San Diego • Coursera</p>
+              <span class="cert-tag">Core Computer Science</span>
+            </a>
+
+            <!-- Cert 7: SAP Data Analyst -->
+            <a href="https://github.com/Sweta170/certificates/blob/main/12217123-SAP.pdf" target="_blank" rel="noopener" class="cert-card tilt-card">
+              <div class="tilt-shine"></div>
+              <div class="cert-icon">📈</div>
+              <h4 class="cert-title">SAP Certified - Data Analyst</h4>
+              <p class="cert-issuer">SAP Analytics Cloud</p>
+              <span class="cert-tag">Data Analytics</span>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- Services & Capabilities -->
+        <div class="skills-section">
+          <div class="section-header animate-on-scroll">
+            <h2 class="section-title" style="font-size: clamp(1.5rem, 3vw, 2.5rem);">Freelance <span class="gradient-text">Services</span> &amp; Capabilities</h2>
+            <p class="section-subtitle" style="margin-top: 0.5rem; color: var(--text-secondary); max-width: 600px; margin-inline: auto;">Delivering robust MERN architectures, custom AI pipelines, payment flows, and containerized cloud setups.</p>
+          </div>
+
+          <!-- 4 Core Services Grid -->
+          <div class="services-grid">
+            <div class="service-card tilt-card animate-on-scroll delay-1">
+              <div class="tilt-shine"></div>
+              <div class="service-icon">💻</div>
+              <h3 class="service-title">Full-Stack MERN Apps</h3>
+              <p class="service-desc">End-to-end web applications with React, Node.js, Express, and MongoDB. Secure JWT authentication, RESTful APIs, and responsive layouts.</p>
+            </div>
+            <div class="service-card tilt-card animate-on-scroll delay-2">
+              <div class="tilt-shine"></div>
+              <div class="service-icon">🤖</div>
+              <h3 class="service-title">Custom AI &amp; Agents</h3>
+              <p class="service-desc">LLM integrations (Claude API), OCR processing (Tesseract.js), background workers, and automation tasks built to spec.</p>
+            </div>
+            <div class="service-card tilt-card animate-on-scroll delay-3">
+              <div class="tilt-shine"></div>
+              <div class="service-icon">💳</div>
+              <h3 class="service-title">API &amp; Gateway Integrations</h3>
+              <p class="service-desc">Stripe payment workflows, Google Calendar API synchronization, automated notification templates, and live Socket.io integrations.</p>
+            </div>
+            <div class="service-card tilt-card animate-on-scroll delay-4">
+              <div class="tilt-shine"></div>
+              <div class="service-icon">🐳</div>
+              <h3 class="service-title">DevOps &amp; Deployments</h3>
+              <p class="service-desc">Microservice containerization using Docker, scalable setups on Railway and Render, and rapid static deployment cycles on Vercel.</p>
+            </div>
+          </div>
+
+          <div class="section-header animate-on-scroll" style="margin-top: 4.5rem; margin-bottom: 2rem;">
+            <h3 class="section-title" style="font-size: clamp(1.2rem, 2.5vw, 1.8rem);">Technical <span class="gradient-text">Toolbox</span></h3>
+          </div>
+
+          <div class="skills-grid">
+            <div class="skill-category animate-on-scroll delay-1">
+              <div class="skill-category-title">🎨 Frontend</div>
+              <ul class="skill-list">
+                <li class="skill-item">React.js</li>
+                <li class="skill-item">Vite</li>
+                <li class="skill-item">Tailwind CSS</li>
+                <li class="skill-item">React Router</li>
+                <li class="skill-item">Recharts</li>
+                <li class="skill-item">Context API</li>
+                <li class="skill-item">JavaScript</li>
+              </ul>
+            </div>
+
+            <div class="skill-category animate-on-scroll delay-2">
+              <div class="skill-category-title">⚙️ Backend</div>
+              <ul class="skill-list">
+                <li class="skill-item">Node.js</li>
+                <li class="skill-item">Express.js</li>
+                <li class="skill-item">FastAPI</li>
+                <li class="skill-item">REST APIs</li>
+                <li class="skill-item">JWT Auth</li>
+                <li class="skill-item">OAuth 2.0</li>
+                <li class="skill-item">Cron Jobs</li>
+              </ul>
+            </div>
+
+            <div class="skill-category animate-on-scroll delay-3">
+              <div class="skill-category-title">🗄️ Databases</div>
+              <ul class="skill-list">
+                <li class="skill-item">MongoDB</li>
+                <li class="skill-item">Mongoose</li>
+                <li class="skill-item">PostgreSQL</li>
+                <li class="skill-item">SQLite</li>
+              </ul>
+            </div>
+
+            <div class="skill-category animate-on-scroll delay-4">
+              <div class="skill-category-title">🤖 AI & Automation</div>
+              <ul class="skill-list">
+                <li class="skill-item">Claude API</li>
+                <li class="skill-item">OCR (Tesseract.js)</li>
+                <li class="skill-item">Machine Learning</li>
+                <li class="skill-item">Deep Learning</li>
+                <li class="skill-item">Computer Vision</li>
+              </ul>
+            </div>
+
+            <div class="skill-category animate-on-scroll delay-5">
+              <div class="skill-category-title">🐳 DevOps & Cloud</div>
+              <ul class="skill-list">
+                <li class="skill-item">Docker</li>
+                <li class="skill-item">Git & GitHub</li>
+                <li class="skill-item">Railway</li>
+                <li class="skill-item">Render</li>
+                <li class="skill-item">Vercel</li>
+              </ul>
+            </div>
+
+            <div class="skill-category animate-on-scroll delay-6">
+              <div class="skill-category-title">🔗 Integrations</div>
+              <ul class="skill-list">
+                <li class="skill-item">Google Calendar API</li>
+                <li class="skill-item">Stripe</li>
+                <li class="skill-item">SMTP Email</li>
+                <li class="skill-item">Cloudinary</li>
+                <li class="skill-item">Socket.io</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 3D Skills Orbit Canvas -->
+          <div id="skills-canvas-container" class="animate-on-scroll">
+            <div class="skills-canvas-overlay"></div>
+            <canvas id="skills-3d-canvas"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ CONTACT ═══════════════════ -->
+      <section class="page-section" id="contact" data-page="contact">
+        <div class="section-header animate-on-scroll">
+          <div class="section-badge">Contact</div>
+          <h2 class="section-title">Let's <span class="gradient-text">Connect</span></h2>
+          <p class="section-subtitle">Open to opportunities, collaborations, and interesting conversations.</p>
+        </div>
+
+        <div class="contact-grid">
+          <div class="contact-info animate-slide-left">
+            <h3>Get in Touch</h3>
+            <p>
+              I'm always excited to discuss new projects, creative ideas, or opportunities to be part of something amazing. Whether you're a recruiter, a fellow developer, or someone with an idea — let's talk!
+            </p>
+
+            <div class="social-links">
+              <a href="https://github.com/Sweta170" target="_blank" rel="noopener" class="social-link" id="social-github">
+                <div class="social-link-icon">🐙</div>
+                <div>
+                  <div style="font-weight: 500; color: var(--text-primary); font-size: 0.85rem;">GitHub</div>
+                  <div style="font-size: 0.75rem;">github.com/Sweta170</div>
+                </div>
+              </a>
+
+              <a href="https://www.linkedin.com/in/sweta17/" target="_blank" rel="noopener" class="social-link" id="social-linkedin">
+                <div class="social-link-icon">💼</div>
+                <div>
+                  <div style="font-weight: 500; color: var(--text-primary); font-size: 0.85rem;">LinkedIn</div>
+                  <div style="font-size: 0.75rem;">linkedin.com/in/sweta17</div>
+                </div>
+              </a>
+
+              <a href="mailto:sahanisweta17@gmail.com" class="social-link" id="social-email">
+                <div class="social-link-icon">📧</div>
+                <div>
+                  <div style="font-weight: 500; color: var(--text-primary); font-size: 0.85rem;">Email</div>
+                  <div style="font-size: 0.75rem;">sahanisweta17@gmail.com</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div class="animate-slide-right">
+            <form class="contact-form" id="contact-form">
+              <div class="form-group">
+                <label class="form-label" for="contact-name">Name</label>
+                <input class="form-input" type="text" id="contact-name" name="name" placeholder="Your name" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contact-email">Email</label>
+                <input class="form-input" type="email" id="contact-email" name="email" placeholder="your@email.com" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contact-message">Message</label>
+                <textarea class="form-textarea" id="contact-message" name="message" placeholder="Tell me about your project or opportunity..." required></textarea>
+              </div>
+              <button type="submit" class="submit-btn" id="submit-btn">Send Message →</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ FOOTER ═══════════════════ -->
+      <footer class="footer">
+        <p>© 2026 Sweta Kumari. Built with passion & clean code. <a href="https://github.com/Sweta170" target="_blank" rel="noopener">View Source</a></p>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════ BACK TO TOP ═══════════════════ -->
+  <button id="back-to-top" aria-label="Back to top">↑</button>
+
+  <!-- ═══════════════════ AI CHATBOT ═══════════════════ -->
+  <button id="chatbot-toggle" aria-label="Open AI Assistant">🤖</button>
+
+  <div id="chatbot-window">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-avatar">🤖</div>
+        <div class="chat-header-info">
+          <h4>Sweta's AI Assistant</h4>
+          <span>● Online</span>
+        </div>
+      </div>
+      <button class="chat-close" id="chat-close" aria-label="Close chat">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-suggestions" id="chat-suggestions"></div>
+    <div class="chat-input-container">
+      <input class="chat-input" id="chat-input" type="text" placeholder="Ask about Sweta's skills, projects..." />
+      <button class="chat-send" id="chat-send" aria-label="Send message">➤</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SETTINGS PANEL ═══════════════════ -->
+  <button id="settings-toggle" aria-label="Open Settings">⚙️</button>
+
+  <div id="settings-panel">
+    <div class="settings-header">
+      <h3>Control Center</h3>
+      <span class="settings-close" id="settings-close">✕</span>
+    </div>
+    
+    <div class="settings-group">
+      <div class="settings-label">Color Theme</div>
+      <div class="theme-options">
+        <div class="theme-opt default active" data-theme="default" title="Default Cyan/Purple"></div>
+        <div class="theme-opt rose" data-theme="rose" title="Rose Cyberpunk"></div>
+        <div class="theme-opt emerald" data-theme="emerald" title="Teal Emerald"></div>
+        <div class="theme-opt amber" data-theme="amber" title="Sunset Gold"></div>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="setting-slider-container">
+        <div class="setting-slider-val">
+          <span>Particle Speed</span>
+          <span id="particle-speed-val">1.0x</span>
+        </div>
+        <input type="range" id="particle-speed-slider" class="setting-range" min="0.1" max="3.0" step="0.1" value="1.0">
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="setting-slider-container">
+        <div class="setting-slider-val">
+          <span>Particle Size</span>
+          <span id="particle-size-val">4.5px</span>
+        </div>
+        <input type="range" id="particle-size-slider" class="setting-range" min="1.0" max="8.0" step="0.5" value="4.5">
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/three-particles.js"></script>
+  <script src="js/loader.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
