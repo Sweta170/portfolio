@@ -98,6 +98,9 @@ class PortfolioApp {
     // Setup 3D Coding Profiles Canvas
     this.setupCoding3DCanvas();
 
+    // Setup 3D Interactive Profile Cube
+    this.setupProfile3DCube();
+
     // Fetch live coding profiles stats dynamically
     this.updateCodingStats();
   }
@@ -1289,10 +1292,221 @@ class PortfolioApp {
     }
   }
 
+  /* ──────────────── 3D CODING CUBE INTERACTIONS ──────────────── */
+
+  setupProfile3DCube() {
+    const cube = document.getElementById('profile-cube');
+    const scene = document.querySelector('.profile-3d-scene');
+    const buttons = document.querySelectorAll('.cube-control-btn');
+    if (!cube || !scene) return;
+
+    let rx = 0; // rotation X
+    let ry = 0; // rotation Y
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let startRX = 0;
+    let startRY = 0;
+    let idleRotationTimer = null;
+    let isHovered = false;
+
+    // Direct mapping of button face to rotation target
+    const faceRotations = {
+      'front': { rx: 0, ry: 0 },      // LeetCode (0 deg)
+      'back': { rx: 0, ry: 180 },     // GFG (180 deg)
+      'left': { rx: 0, ry: 90 },      // Total Solved (90 deg)
+      'right': { rx: 0, ry: -90 }     // Milestones (-90 deg)
+    };
+
+    const updateActiveButton = () => {
+      // Normalize ry to be within [0, 360) for face calculation
+      let normY = ((ry % 360) + 360) % 360;
+      
+      // Determine nearest face based on normalized Y rotation
+      let activeFace = 'front';
+      if (normY >= 45 && normY < 135) {
+        activeFace = 'left'; // 90 deg
+      } else if (normY >= 135 && normY < 225) {
+        activeFace = 'back'; // 180 deg
+      } else if (normY >= 225 && normY < 315) {
+        activeFace = 'right'; // 270 deg (which is -90 deg)
+      } else {
+        activeFace = 'front'; // 0 or 360 deg
+      }
+
+      buttons.forEach(btn => {
+        if (btn.dataset.face === activeFace) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    };
+
+    const applyTransform = (smooth = true) => {
+      if (smooth) {
+        cube.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+      } else {
+        cube.style.transition = 'none';
+      }
+      cube.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+    };
+
+    // Auto-rotation when idle
+    const startIdleRotation = () => {
+      if (idleRotationTimer) clearInterval(idleRotationTimer);
+      idleRotationTimer = setInterval(() => {
+        if (!isDragging && !isHovered) {
+          ry += 0.25; // slow rotation speed
+          rx += (0 - rx) * 0.05; // slowly settle rx to 0
+          applyTransform(false); // no transitions for smooth auto-rotation
+          updateActiveButton();
+        }
+      }, 30);
+    };
+
+    const stopIdleRotation = () => {
+      if (idleRotationTimer) {
+        clearInterval(idleRotationTimer);
+        idleRotationTimer = null;
+      }
+    };
+
+    // Drag handlers
+    const dragStart = (clientX, clientY) => {
+      isDragging = true;
+      startX = clientX;
+      startY = clientY;
+      startRX = rx;
+      startRY = ry;
+      stopIdleRotation();
+      
+      if (this.soundSynth) {
+        this.soundSynth.playTick();
+      }
+    };
+
+    const dragMove = (clientX, clientY) => {
+      if (!isDragging) return;
+      const dx = clientX - startX;
+      const dy = clientY - startY;
+
+      // Sensitivity factor
+      const sensitivity = 0.5;
+      rx = startRX - dy * sensitivity;
+      ry = startRY + dx * sensitivity;
+
+      // Clamp X rotation to prevent the cube from flipping upside down
+      rx = Math.max(-35, Math.min(35, rx));
+
+      applyTransform(false); // Raw interaction should be direct and instant
+    };
+
+    const dragEnd = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      applyTransform(true); // Snap with transition
+      updateActiveButton();
+      startIdleRotation();
+
+      if (this.soundSynth) {
+        this.soundSynth.playSweep();
+      }
+    };
+
+    // Mouse events
+    scene.addEventListener('mousedown', (e) => {
+      // Don't drag if clicking interactive link/button elements
+      if (e.target.closest('a, button')) return;
+      e.preventDefault();
+      dragStart(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isDragging) dragMove(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDragging) dragEnd();
+    });
+
+    // Touch events
+    scene.addEventListener('touchstart', (e) => {
+      if (e.target.closest('a, button')) return;
+      if (e.touches.length === 1) {
+        dragStart(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (isDragging && e.touches.length === 1) {
+        // Prevent default touch behavior (scrolling) only while dragging the cube
+        if (e.cancelable) e.preventDefault();
+        dragMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+      if (isDragging) dragEnd();
+    });
+
+    // Hover detection to pause auto-rotate
+    scene.addEventListener('mouseenter', () => {
+      isHovered = true;
+      stopIdleRotation();
+    });
+
+    scene.addEventListener('mouseleave', () => {
+      isHovered = false;
+      if (!isDragging) {
+        startIdleRotation();
+      }
+    });
+
+    // Controls Buttons
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const face = btn.dataset.face;
+        const targets = faceRotations[face];
+        if (targets) {
+          rx = targets.rx;
+          
+          // Math to rotate to nearest representation of the face's target degree
+          // to avoid spin-backs when clicking buttons
+          const targetY = targets.ry;
+          const diff = ((targetY - ry) % 360 + 540) % 360 - 180;
+          ry += diff;
+
+          applyTransform(true);
+          
+          buttons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          if (this.soundSynth) {
+            this.soundSynth.playSweep();
+          }
+        }
+      });
+    });
+
+    // Start idle rotation immediately
+    startIdleRotation();
+  }
+
   /* ──────────────── DYNAMIC CODING STATS FETCHER ──────────────── */
 
   updateCodingStats() {
     console.log("Coding Stats: Fetching profiles dynamically...");
+
+    const updateOverallTotal = () => {
+      const lcSolvedEl = document.getElementById('lc-solved');
+      const gfgSolvedEl = document.getElementById('gfg-solved');
+      const totalSolvedEl = document.getElementById('total-solved-overall');
+      if (!totalSolvedEl) return;
+      const lcVal = lcSolvedEl ? parseInt(lcSolvedEl.textContent, 10) : 293;
+      const gfgVal = gfgSolvedEl ? parseInt(gfgSolvedEl.textContent, 10) : 136;
+      totalSolvedEl.textContent = `${lcVal + gfgVal}+`;
+    };
 
     // 1. Fetch LeetCode Stats
     // Solved Info
@@ -1314,6 +1528,8 @@ class PortfolioApp {
 
           const hardEl = document.getElementById('lc-hard');
           if (hardEl) hardEl.innerHTML = `${data.hardSolved}<span class="stat-max">/943</span>`;
+
+          updateOverallTotal();
         }
       })
       .catch(err => console.warn('LeetCode Solved Dynamic Sync Error:', err));
@@ -1395,6 +1611,8 @@ class PortfolioApp {
 
           const potdEl = document.getElementById('gfg-potd-solved');
           if (potdEl && data.pod_correct_submissions_count !== undefined) potdEl.textContent = data.pod_correct_submissions_count;
+
+          updateOverallTotal();
         }
       })
       .catch(err => console.warn('GeeksforGeeks Dynamic Sync Error:', err));

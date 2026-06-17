@@ -469,181 +469,213 @@
           </div>
         </div>
 
-        <!-- Coding Profiles Section -->
+        <!-- Coding Profiles Section (3D Cube Style) -->
         <div class="coding-profiles-section animate-on-scroll">
-          <div class="section-header" style="margin-bottom: 2.5rem; margin-top: 4rem;">
-            <h2 class="section-title" style="font-size: clamp(1.5rem, 3vw, 2.5rem);">Coding <span class="gradient-text">Profiles</span></h2>
+          <div class="section-header" style="margin-bottom: 2rem; margin-top: 4rem;">
+            <h2 class="section-title" style="font-size: clamp(1.5rem, 3vw, 2.5rem);">Coding <span class="gradient-text">Dimension</span></h2>
+            <p class="section-subtitle">Drag to rotate the 3D coding cube or use the controls below.</p>
           </div>
           
-          <div class="coding-profiles-layout">
-            
-            <!-- 3D Canvas Column -->
-            <div class="coding-3d-wrapper">
-              <div class="coding-3d-card tilt-card" id="coding-canvas-container" style="position: relative; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-light); overflow: hidden; width: 100%;">
-                <div class="tilt-shine"></div>
-                <div class="coding-3d-overlay"></div>
-                <canvas id="coding-3d-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block;"></canvas>
-                <div class="coding-3d-label">DSA &amp; Problem Solving Space</div>
+          <div class="profile-3d-container">
+            <div class="profile-3d-scene">
+              <div class="profile-3d-cube" id="profile-cube">
+                
+                <!-- Face 1: LeetCode (Front) -->
+                <div class="cube-face face-front leetcode-card">
+                  <div class="cube-face-glow"></div>
+                  <!-- LeetCode Info -->
+                  <div class="platform-info-header">
+                    <div class="platform-title">
+                      <span class="platform-icon orange">🔥</span>
+                      <h3>LeetCode</h3>
+                    </div>
+                    <span class="platform-badge" id="lc-rank">Rank 483,920</span>
+                  </div>
+                  
+                  <div class="cube-stats-main">
+                    <div class="cube-radial-progress leetcode-border">
+                      <span class="cube-solved-num" id="lc-solved">293</span>
+                      <span class="cube-solved-label">Solved</span>
+                    </div>
+                    
+                    <div class="cube-stats-breakdown">
+                      <div class="breakdown-row easy">
+                        <span>Easy</span>
+                        <span id="lc-easy">130<span class="max-val">/950</span></span>
+                      </div>
+                      <div class="breakdown-row medium">
+                        <span>Medium</span>
+                        <span id="lc-medium">137<span class="max-val">/2069</span></span>
+                      </div>
+                      <div class="breakdown-row hard">
+                        <span>Hard</span>
+                        <span id="lc-hard">26<span class="max-val">/943</span></span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="cube-pills-grid">
+                    <div class="cube-pill">
+                      <span class="pill-lbl">Rating</span>
+                      <span class="pill-val" id="lc-rating">1,550</span>
+                    </div>
+                    <div class="cube-pill">
+                      <span class="pill-lbl">Global Rank</span>
+                      <span class="pill-val" id="lc-global-rank">277,708</span>
+                    </div>
+                    <div class="cube-pill">
+                      <span class="pill-lbl">Max Streak</span>
+                      <span class="pill-val" id="lc-max-streak">12d</span>
+                    </div>
+                  </div>
+                  
+                  <div class="cube-face-footer">
+                    <span class="footer-badge" id="lc-top">Top 32.16%</span>
+                    <a href="https://leetcode.com/u/Coder-tech/" target="_blank" rel="noopener" class="cube-link">Verify Profile ↗</a>
+                  </div>
+                </div>
+                
+                <!-- Face 2: GeeksforGeeks (Back) -->
+                <div class="cube-face face-back gfg-card">
+                  <div class="cube-face-glow"></div>
+                  <!-- GFG Info -->
+                  <div class="platform-info-header">
+                    <div class="platform-title">
+                      <span class="platform-icon green">🌳</span>
+                      <h3>GeeksforGeeks</h3>
+                    </div>
+                    <span class="platform-badge" id="gfg-rank">Rank #5892</span>
+                  </div>
+                  
+                  <div class="cube-stats-main">
+                    <div class="cube-radial-progress gfg-border">
+                      <span class="cube-solved-num" id="gfg-solved">136</span>
+                      <span class="cube-solved-label">Solved</span>
+                    </div>
+                    
+                    <div class="cube-stats-breakdown">
+                      <div class="breakdown-row basic">
+                        <span>Basic</span>
+                        <span id="gfg-basic">28</span>
+                      </div>
+                      <div class="breakdown-row easy">
+                        <span>Easy</span>
+                        <span id="gfg-easy">54</span>
+                      </div>
+                      <div class="breakdown-row medium">
+                        <span>Medium</span>
+                        <span id="gfg-medium">51</span>
+                      </div>
+                      <div class="breakdown-row hard">
+                        <span>Hard</span>
+                        <span id="gfg-hard">3</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="cube-pills-grid">
+                    <div class="cube-pill">
+                      <span class="pill-lbl">Score</span>
+                      <span class="pill-val" id="gfg-score">355</span>
+                    </div>
+                    <div class="cube-pill">
+                      <span class="pill-lbl">POTDs</span>
+                      <span class="pill-val" id="gfg-potd-solved">12</span>
+                    </div>
+                    <div class="cube-pill">
+                      <span class="pill-lbl">Streak</span>
+                      <span class="pill-val" id="gfg-max-streak">3d</span>
+                    </div>
+                  </div>
+                  
+                  <div class="cube-face-footer">
+                    <span class="footer-badge">LPU Jalandhar</span>
+                    <a href="https://www.geeksforgeeks.org/profile/swetarfu1t?tab=activity" target="_blank" rel="noopener" class="cube-link">Verify Profile ↗</a>
+                  </div>
+                </div>
+                
+                <!-- Face 3: Overview (Left) -->
+                <div class="cube-face face-left overview-card">
+                  <div class="cube-face-glow"></div>
+                  <div class="platform-info-header">
+                    <div class="platform-title">
+                      <span class="platform-icon blue">⚡</span>
+                      <h3>Total Solved</h3>
+                    </div>
+                    <span class="platform-badge">Active Sync</span>
+                  </div>
+                  
+                  <div class="overview-content">
+                    <div class="overall-solved-circle">
+                      <span class="overall-solved-num" id="total-solved-overall">429+</span>
+                      <span class="overall-solved-label">Problems</span>
+                    </div>
+                    <p class="overview-desc">
+                      Solving data structures and algorithms problems across LeetCode and GeeksforGeeks daily to build optimal computational thinking.
+                    </p>
+                  </div>
+                  
+                  <div class="cube-face-footer">
+                    <span class="footer-badge">Data Structures</span>
+                    <span class="footer-badge">Algorithms</span>
+                  </div>
+                </div>
+                
+                <!-- Face 4: Achievements (Right) -->
+                <div class="cube-face face-right achievements-card">
+                  <div class="cube-face-glow"></div>
+                  <div class="platform-info-header">
+                    <div class="platform-title">
+                      <span class="platform-icon purple">🏆</span>
+                      <h3>Milestones</h3>
+                    </div>
+                    <span class="platform-badge">Verified</span>
+                  </div>
+                  
+                  <div class="achievements-list">
+                    <div class="achievement-item">
+                      <span class="ach-badge">🎖️</span>
+                      <div>
+                        <h4>100 Days Badge 2025</h4>
+                        <p>LeetCode Active Consistency</p>
+                      </div>
+                    </div>
+                    <div class="achievement-item">
+                      <span class="ach-badge">🔥</span>
+                      <div>
+                        <h4>176 submissions</h4>
+                        <p>Active code updates in past year</p>
+                      </div>
+                    </div>
+                    <div class="achievement-item">
+                      <span class="ach-badge">🎯</span>
+                      <div>
+                        <h4>Top 32.16% global</h4>
+                        <p>LeetCode Contests</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="cube-face-footer">
+                    <span class="footer-badge">HackerRank Certs</span>
+                    <span class="footer-badge">Consistency</span>
+                  </div>
+                </div>
+                
               </div>
             </div>
             
-            <!-- Cards Column -->
-            <div class="coding-cards-wrapper">
-              
-              <!-- LeetCode Card -->
-              <div class="coding-card leetcode-card tilt-card">
-                <div class="tilt-shine"></div>
-                <div class="coding-card-header">
-                  <div class="platform-info">
-                    <div class="platform-logo leetcode-logo">
-                      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                        <path d="M16.102 17.93l-2.697 2.607c-.466.45-1.211.45-1.677 0l-5.667-5.48a1.678 1.678 0 0 1 0-2.413L11.73 7.037c.466-.45 1.211-.45 1.677 0l2.697 2.608a1.2 1.2 0 0 1 0 1.722 1.272 1.272 0 0 1-1.768 0L12.5 9.585l-4.33 4.193 4.33 4.193 1.834-1.775a1.2 1.2 0 0 1 1.768 0 1.201 1.201 0 0 1 0 1.734zM22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10 10-4.477 10-10zM12 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16z"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 class="platform-name">LeetCode</h3>
-                      <a href="https://leetcode.com/u/Coder-tech/" target="_blank" rel="noopener" class="platform-username">@Coder-tech ↗</a>
-                    </div>
-                  </div>
-                  <div class="platform-badge" id="lc-rank">Rank 483,920</div>
-                </div>
-
-                <div class="coding-card-stats">
-                  <div class="main-stats-row">
-                    <div class="radial-progress-container leetcode-progress">
-                      <div class="solved-count">
-                        <span class="solved-num" id="lc-solved">293</span>
-                        <span class="solved-total">/3962</span>
-                      </div>
-                      <div class="solved-label">Solved</div>
-                    </div>
-                    
-                    <div class="stats-mini-grid">
-                      <div class="mini-stat easy">
-                        <span class="stat-lbl">Easy</span>
-                        <span class="stat-val" id="lc-easy">130<span class="stat-max">/950</span></span>
-                      </div>
-                      <div class="mini-stat medium">
-                        <span class="stat-lbl">Medium</span>
-                        <span class="stat-val" id="lc-medium">137<span class="stat-max">/2069</span></span>
-                      </div>
-                      <div class="mini-stat hard">
-                        <span class="stat-lbl">Hard</span>
-                        <span class="stat-val" id="lc-hard">26<span class="stat-max">/943</span></span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="additional-stats">
-                    <div class="stat-pill">
-                      <span class="pill-label">Contest Rating</span>
-                      <span class="pill-value" id="lc-rating">1,550</span>
-                    </div>
-                    <div class="stat-pill">
-                      <span class="pill-label">Top Contests</span>
-                      <span class="pill-value" id="lc-top">32.16%</span>
-                    </div>
-                    <div class="stat-pill">
-                      <span class="pill-label">Global Rank</span>
-                      <span class="pill-value" id="lc-global-rank">277,708</span>
-                    </div>
-                    <div class="stat-pill">
-                      <span class="pill-label">Attended</span>
-                      <span class="pill-value" id="lc-attended">7</span>
-                    </div>
-                    <div class="stat-pill">
-                      <span class="pill-label">Active Days</span>
-                      <span class="pill-value" id="lc-active-days">79</span>
-                    </div>
-                    <div class="stat-pill">
-                      <span class="pill-label">Max Streak</span>
-                      <span class="pill-value" id="lc-max-streak">12d</span>
-                    </div>
-                  </div>
-
-                  <div class="card-footer-info">
-                    <span>🏆 Recent Badge: <strong>100 Days Badge 2025</strong></span>
-                    <span>🔥 176 submissions past year</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- GeeksforGeeks Card -->
-              <div class="coding-card gfg-card tilt-card">
-                <div class="tilt-shine"></div>
-                <div class="coding-card-header">
-                  <div class="platform-info">
-                    <div class="platform-logo gfg-logo">
-                      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.8 14.5c-2.4 0-4.3-1.9-4.3-4.3s1.9-4.3 4.3-4.3c1.7 0 3.1 1 3.8 2.4l-1.8.8c-.4-.7-1.1-1.2-2-1.2-1.3 0-2.3 1-2.3 2.3s1 2.3 2.3 2.3c.9 0 1.6-.5 2-1.2l1.8.8c-.7 1.4-2.1 2.4-3.8 2.4z"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 class="platform-name">GeeksforGeeks</h3>
-                      <a href="https://www.geeksforgeeks.org/profile/swetarfu1t?tab=activity" target="_blank" rel="noopener" class="platform-username">@swetarfu1t ↗</a>
-                    </div>
-                  </div>
-                  <div class="platform-badge" id="gfg-rank">Rank #5892</div>
-                </div>
-
-                <div class="coding-card-stats">
-                  <div class="main-stats-row">
-                    <div class="radial-progress-container gfg-progress">
-                      <div class="solved-count">
-                        <span class="solved-num" id="gfg-solved">136</span>
-                      </div>
-                      <div class="solved-label">Solved</div>
-                    </div>
-                    
-                    <div class="stats-mini-grid">
-                      <div class="mini-stat basic">
-                        <span class="stat-lbl">Basic</span>
-                        <span class="stat-val" id="gfg-basic">28</span>
-                      </div>
-                      <div class="mini-stat easy">
-                        <span class="stat-lbl">Easy</span>
-                        <span class="stat-val" id="gfg-easy">54</span>
-                      </div>
-                      <div class="mini-stat medium">
-                        <span class="stat-lbl">Medium</span>
-                        <span class="stat-val" id="gfg-medium">51</span>
-                      </div>
-                      <div class="mini-stat hard">
-                        <span class="stat-lbl">Hard</span>
-                        <span class="stat-val" id="gfg-hard">3</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="additional-stats">
-                    <div class="stat-pill">
-                      <span class="pill-label">Coding Score</span>
-                      <span class="pill-value" id="gfg-score">355</span>
-                    </div>
-                    <div class="stat-pill">
-                      <span class="pill-label">Institute Rank</span>
-                      <span class="pill-value" id="gfg-inst-rank">5892</span>
-                    </div>
-                    <div class="stat-pill">
-                      <span class="pill-label">POTD Solved</span>
-                      <span class="pill-value" id="gfg-potd-solved">12</span>
-                    </div>
-                    <div class="stat-pill">
-                      <span class="pill-label">Longest Streak</span>
-                      <span class="pill-value" id="gfg-max-streak">3d</span>
-                    </div>
-                  </div>
-
-                  <div class="card-footer-info">
-                    <span>🏢 Institute: <strong>Lovely Professional University (LPU)</strong></span>
-                    <span>🔥 Active POTD Streak</span>
-                  </div>
-                </div>
-              </div>
-
+            <!-- 3D Controls -->
+            <div class="cube-controls">
+              <button class="cube-control-btn active" data-face="front" id="btn-face-lc">LeetCode</button>
+              <button class="cube-control-btn" data-face="back" id="btn-face-gfg">GeeksforGeeks</button>
+              <button class="cube-control-btn" data-face="left" id="btn-face-over">Total Solved</button>
+              <button class="cube-control-btn" data-face="right" id="btn-face-ach">Milestones</button>
             </div>
           </div>
         </div>
+
+        
 
         <!-- Certifications Section -->
         <div class="certifications-section animate-on-scroll">
