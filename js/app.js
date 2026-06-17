@@ -1309,6 +1309,8 @@ class PortfolioApp {
     let startRY = 0;
     let idleRotationTimer = null;
     let isHovered = false;
+    let isSnapping = false;
+    let snapTimeout = null;
 
     // Direct mapping of button face to rotation target
     const faceRotations = {
@@ -1359,14 +1361,37 @@ class PortfolioApp {
       cube.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
     };
 
+    const triggerSnap = () => {
+      isSnapping = true;
+      if (snapTimeout) clearTimeout(snapTimeout);
+      applyTransform(true);
+      updateActiveButton();
+
+      // Delay clearing the snap flag to allow the transition to complete smoothly
+      snapTimeout = setTimeout(() => {
+        isSnapping = false;
+        if (!isDragging && !isHovered) {
+          startIdleRotation();
+        }
+      }, 600); // matches 0.6s transition
+    };
+
     // Auto-rotation when idle
     const startIdleRotation = () => {
       if (idleRotationTimer) clearInterval(idleRotationTimer);
+      if (isSnapping) return; // Wait for snaps to complete
+      
       idleRotationTimer = setInterval(() => {
-        if (!isDragging && !isHovered) {
-          ry += 0.25; // slow rotation speed
-          rx += (0 - rx) * 0.05; // slowly settle rx to 0
-          applyTransform(false); // no transitions for smooth auto-rotation
+        if (!isDragging && !isHovered && !isSnapping) {
+          // Settle rx to 0 for side faces, or -90 if showing the GSSoC (top) face
+          const targetRx = rx < -45 ? -90 : 0;
+          
+          if (targetRx === 0) {
+            ry += 0.25; // slow horizontal rotation only when viewing side faces
+          }
+          
+          rx += (targetRx - rx) * 0.05; // slowly settle rx to its target
+          applyTransform(false); // direct updates for smooth auto-rotation
           updateActiveButton();
         }
       }, 30);
@@ -1382,6 +1407,8 @@ class PortfolioApp {
     // Drag handlers
     const dragStart = (clientX, clientY) => {
       isDragging = true;
+      isSnapping = false;
+      if (snapTimeout) clearTimeout(snapTimeout);
       startX = clientX;
       startY = clientY;
       startRX = rx;
@@ -1412,9 +1439,32 @@ class PortfolioApp {
     const dragEnd = () => {
       if (!isDragging) return;
       isDragging = false;
-      applyTransform(true); // Snap with transition
-      updateActiveButton();
-      startIdleRotation();
+      
+      // Calculate and snap to the nearest exact face target
+      if (rx < -45) {
+        // Snap to top face (GSSoC)
+        rx = -90;
+        ry = Math.round(ry / 360) * 360;
+      } else {
+        // Snap to nearest side face
+        rx = 0;
+        let normY = ((ry % 360) + 360) % 360;
+        let targetY = 0;
+        if (normY >= 45 && normY < 135) {
+          targetY = 90; // left
+        } else if (normY >= 135 && normY < 225) {
+          targetY = 180; // back
+        } else if (normY >= 225 && normY < 315) {
+          targetY = 270; // right
+        } else {
+          targetY = 0;
+        }
+
+        const diff = ((targetY - ry) % 360 + 540) % 360 - 180;
+        ry += diff;
+      }
+
+      triggerSnap();
 
       if (this.soundSynth) {
         this.soundSynth.playSweep();
@@ -1423,7 +1473,6 @@ class PortfolioApp {
 
     // Mouse events
     scene.addEventListener('mousedown', (e) => {
-      // Don't drag if clicking interactive link/button elements
       if (e.target.closest('a, button')) return;
       e.preventDefault();
       dragStart(e.clientX, e.clientY);
@@ -1447,7 +1496,6 @@ class PortfolioApp {
 
     window.addEventListener('touchmove', (e) => {
       if (isDragging && e.touches.length === 1) {
-        // Prevent default touch behavior (scrolling) only while dragging the cube
         if (e.cancelable) e.preventDefault();
         dragMove(e.touches[0].clientX, e.touches[0].clientY);
       }
@@ -1465,7 +1513,7 @@ class PortfolioApp {
 
     scene.addEventListener('mouseleave', () => {
       isHovered = false;
-      if (!isDragging) {
+      if (!isDragging && !isSnapping) {
         startIdleRotation();
       }
     });
@@ -1479,16 +1527,14 @@ class PortfolioApp {
           rx = targets.rx;
           
           if (face === 'top') {
-            // Snap Y to the nearest multiple of 360 to keep GSSoC face upright
             ry = Math.round(ry / 360) * 360;
           } else {
-            // Math to rotate to nearest representation of the face's target degree
             const targetY = targets.ry;
             const diff = ((targetY - ry) % 360 + 540) % 360 - 180;
             ry += diff;
           }
 
-          applyTransform(true);
+          triggerSnap();
           
           buttons.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
