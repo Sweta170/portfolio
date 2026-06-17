@@ -928,20 +928,63 @@ class PortfolioApp {
     if (!container) return;
 
     const ctx = canvas.getContext('2d');
-    const tags = [
-      'React.js', 'Vite', 'Tailwind CSS', 'Node.js', 'Express.js', 'FastAPI',
-      'MongoDB', 'PostgreSQL', 'Docker', 'Claude API', 'JWT', 'Stripe',
-      'Socket.io', 'Three.js', 'Python', 'JavaScript', 'Git & GitHub',
-      'Railway', 'Render', 'Vercel', 'Recharts', 'Tesseract.js', 'OAuth 2.0',
-      'Mongoose', 'SQLite', 'Deep Learning', 'Computer Vision', 'Machine Learning'
+    
+    // Grouped skills mapping with categories
+    const tagsWithCategories = [
+      { text: 'React.js', category: 'frontend' },
+      { text: 'Vite', category: 'frontend' },
+      { text: 'Tailwind CSS', category: 'frontend' },
+      { text: 'React Router', category: 'frontend' },
+      { text: 'Recharts', category: 'frontend' },
+      { text: 'Context API', category: 'frontend' },
+      { text: 'JavaScript', category: 'frontend' },
+      
+      { text: 'Node.js', category: 'backend' },
+      { text: 'Express.js', category: 'backend' },
+      { text: 'FastAPI', category: 'backend' },
+      { text: 'REST APIs', category: 'backend' },
+      { text: 'JWT Auth', category: 'backend' },
+      { text: 'OAuth 2.0', category: 'backend' },
+      { text: 'Cron Jobs', category: 'backend' },
+      
+      { text: 'MongoDB', category: 'database' },
+      { text: 'Mongoose', category: 'database' },
+      { text: 'PostgreSQL', category: 'database' },
+      { text: 'SQLite', category: 'database' },
+      
+      { text: 'Claude API', category: 'ai' },
+      { text: 'OCR (Tesseract.js)', category: 'ai' },
+      { text: 'Machine Learning', category: 'ai' },
+      { text: 'Deep Learning', category: 'ai' },
+      { text: 'Computer Vision', category: 'ai' },
+      
+      { text: 'Docker', category: 'devops' },
+      { text: 'Git & GitHub', category: 'devops' },
+      { text: 'Railway', category: 'devops' },
+      { text: 'Render', category: 'devops' },
+      { text: 'Vercel', category: 'devops' },
+      
+      { text: 'Google Calendar API', category: 'integration' },
+      { text: 'Stripe', category: 'integration' },
+      { text: 'SMTP Email', category: 'integration' },
+      { text: 'Cloudinary', category: 'integration' },
+      { text: 'Socket.io', category: 'integration' }
     ];
 
-    let items = [];
-    const radius = 140;
-    const fl = 220; // focal length
+    const categoryColors = {
+      frontend: 'rgba(244, 63, 94, ',      // Rose
+      backend: 'rgba(139, 92, 246, ',      // Purple
+      database: 'rgba(59, 130, 246, ',     // Blue
+      ai: 'rgba(16, 185, 129, ',           // Emerald
+      devops: 'rgba(245, 158, 11, ',         // Amber
+      integration: 'rgba(0, 212, 255, '    // Cyan
+    };
 
-    // Map tags to sphere points
-    const count = tags.length;
+    let items = [];
+    const radius = 220; // Increased radius for larger container
+    const fl = 350;     // Focal length
+
+    const count = tagsWithCategories.length;
     for (let i = 0; i < count; i++) {
       const phi = Math.acos(-1 + (2 * i) / count);
       const theta = Math.sqrt(count * Math.PI) * phi;
@@ -951,36 +994,54 @@ class PortfolioApp {
       const z = radius * Math.cos(phi);
 
       items.push({
-        text: tags[i],
+        text: tagsWithCategories[i].text,
+        category: tagsWithCategories[i].category,
         x: x,
         y: y,
         z: z,
         x2d: 0,
         y2d: 0,
         scale: 1,
-        alpha: 1
+        alpha: 1,
+        hovered: false
       });
     }
 
-    let angleX = 0.005;
-    let angleY = 0.005;
-    let targetAngleX = 0.003;
-    let targetAngleY = 0.003;
+    let angleX = 0.002;
+    let angleY = 0.002;
+    let targetAngleX = 0.0015;
+    let targetAngleY = 0.0015;
 
-    // Track mouse
+    let mouseX = 0;
+    let mouseY = 0;
+    let isMouseIn = false;
+
+    // Track mouse movement
     container.addEventListener('mousemove', (e) => {
-      const rect = container.getBoundingClientRect();
-      const mx = e.clientX - rect.left - rect.width / 2;
-      const my = e.clientY - rect.top - rect.height / 2;
-      
-      // Speed up rotation based on distance from center
-      targetAngleY = mx * 0.00003;
-      targetAngleX = -my * 0.00003;
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left - rect.width / 2;
+      mouseY = e.clientY - rect.top - rect.height / 2;
+      isMouseIn = true;
+
+      // Adjust rotation speed depending on distance from center
+      targetAngleY = mouseX * 0.000015;
+      targetAngleX = -mouseY * 0.000015;
     });
 
     container.addEventListener('mouseleave', () => {
-      targetAngleX = 0.003;
-      targetAngleY = 0.003;
+      isMouseIn = false;
+      targetAngleX = 0.0015;
+      targetAngleY = 0.0015;
+      items.forEach(item => item.hovered = false);
+    });
+
+    // Handle clicks to play synth sound & search
+    container.addEventListener('click', () => {
+      const hoveredItem = items.find(item => item.hovered);
+      if (hoveredItem) {
+        if (this.soundSynth) this.soundSynth.playTick();
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(hoveredItem.text)}`, '_blank');
+      }
     });
 
     // Handle canvas resizing
@@ -1024,52 +1085,114 @@ class PortfolioApp {
       const cx = canvas.width / 2;
       const cy = canvas.height / 2;
 
-      // Rotate and project
+      // Project items first
       items.forEach(item => {
         rotateX(item, angleX);
         rotateY(item, angleY);
 
         const dist = fl + item.z;
         item.scale = fl / dist;
-        item.alpha = (item.z + radius) / (2 * radius) * 0.7 + 0.3; // depth opacity
+        item.alpha = (item.z + radius) / (2 * radius) * 0.6 + 0.4; // depth opacity
 
         item.x2d = cx + item.x * item.scale;
         item.y2d = cy + item.y * item.scale;
+        item.hovered = false; // Reset hover state
       });
 
-      // Sort by depth (z-index sorting)
-      items.sort((a, b) => b.z - a.z);
+      // Detect closest hovered item (only items on the front side)
+      if (isMouseIn) {
+        let closestItem = null;
+        let minDistance = 55; // hover bounds in px
 
-      // Draw
-      items.forEach(item => {
-        const size = Math.round(11 * item.scale + 6);
-        ctx.font = `600 ${size}px var(--font-heading)`;
+        items.forEach(item => {
+          if (item.z < 80) { // front side only
+            const dx = item.x2d - (mouseX + cx);
+            const dy = item.y2d - (mouseY + cy);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < minDistance) {
+              minDistance = dist;
+              closestItem = item;
+            }
+          }
+        });
 
-        // Select colors based on body theme
-        let color = 'rgba(0, 212, 255, '; // default cyan
-        if (document.body.classList.contains('theme-rose')) {
-          color = 'rgba(255, 0, 127, ';
-        } else if (document.body.classList.contains('theme-emerald')) {
-          color = 'rgba(0, 245, 212, ';
-        } else if (document.body.classList.contains('theme-amber')) {
-          color = 'rgba(255, 183, 3, ';
+        if (closestItem) {
+          closestItem.hovered = true;
         }
+      }
 
-        ctx.fillStyle = color + item.alpha + ')';
+      // Draw constellation network lines
+      ctx.lineWidth = 0.55;
+      for (let i = 0; i < count; i++) {
+        for (let j = i + 1; j < count; j++) {
+          const itemA = items[i];
+          const itemB = items[j];
+
+          const dx = itemA.x - itemB.x;
+          const dy = itemA.y - itemB.y;
+          const dz = itemA.z - itemB.z;
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+          // Connect close neighbors
+          if (dist < 135) {
+            const minAlpha = Math.min(itemA.alpha, itemB.alpha);
+            const proximity = 1 - (dist / 135);
+            const opacity = minAlpha * proximity * 0.12;
+
+            ctx.beginPath();
+            ctx.moveTo(itemA.x2d, itemA.y2d);
+            ctx.lineTo(itemB.x2d, itemB.y2d);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Sort by Z-depth (draw back-to-front)
+      const sortedItems = [...items].sort((a, b) => b.z - a.z);
+
+      // Draw tags
+      sortedItems.forEach(item => {
+        let size = Math.round(11 * item.scale + 6);
+        if (item.hovered) size = Math.round(size * 1.35); // pop out on hover
+
+        ctx.font = `600 ${size}px var(--font-heading)`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // Add subtle text shadow/glow for front tags
-        if (item.z < 0) {
-          ctx.shadowColor = ctx.fillStyle;
-          ctx.shadowBlur = 8 * item.scale;
+        const colorPrefix = categoryColors[item.category] || 'rgba(0, 212, 255, ';
+        const opacity = item.hovered ? 1.0 : item.alpha;
+
+        // Apply glow highlights
+        if (item.hovered) {
+          ctx.shadowColor = colorPrefix + '1.0)';
+          ctx.shadowBlur = 18;
+        } else if (item.z < 0) {
+          ctx.shadowColor = colorPrefix + opacity + ')';
+          ctx.shadowBlur = 6 * item.scale;
         } else {
           ctx.shadowBlur = 0;
         }
 
+        ctx.fillStyle = colorPrefix + opacity + ')';
         ctx.fillText(item.text, item.x2d, item.y2d);
+        ctx.shadowBlur = 0; // reset
+
+        // Draw targeted ring and metadata label if hovered
+        if (item.hovered) {
+          // Metadata badge
+          ctx.font = `400 9px var(--font-mono)`;
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+          ctx.fillText(item.category.toUpperCase(), item.x2d, item.y2d + size * 0.85 + 5);
+
+          // Target reticle ring
+          ctx.beginPath();
+          ctx.arc(item.x2d, item.y2d, size * 0.9 + 4, 0, 2 * Math.PI);
+          ctx.strokeStyle = colorPrefix + '0.45)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
       });
-      ctx.shadowBlur = 0; // reset
     };
 
     render();
