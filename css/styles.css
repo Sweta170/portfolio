@@ -1352,16 +1352,52 @@ button {
 }
 
 .skill-category {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  position: relative;
+  background: rgba(10, 10, 26, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   border-radius: var(--radius-lg);
   padding: 1.75rem;
-  transition: border-color var(--transition-base), transform var(--transition-base);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, transform 0.15s ease;
+  transform-style: preserve-3d;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* 3D Color-coded Neon Themes */
+.skill-category.frontend-card {
+  --accent-color: var(--accent-rose);
+  --accent-color-rgb: 244, 63, 94;
+}
+.skill-category.backend-card {
+  --accent-color: var(--accent-purple);
+  --accent-color-rgb: 139, 92, 246;
+}
+.skill-category.database-card {
+  --accent-color: var(--accent-blue);
+  --accent-color-rgb: 59, 130, 246;
+}
+.skill-category.ai-card {
+  --accent-color: var(--accent-emerald);
+  --accent-color-rgb: 16, 185, 129;
+}
+.skill-category.devops-card {
+  --accent-color: var(--accent-amber);
+  --accent-color-rgb: 245, 158, 11;
+}
+.skill-category.integration-card {
+  --accent-color: var(--accent-cyan);
+  --accent-color-rgb: 0, 212, 255;
 }
 
 .skill-category:hover {
-  border-color: var(--border-medium);
-  transform: translateY(-2px);
+  border-color: var(--accent-color);
+  background: rgba(10, 10, 32, 0.85);
+  box-shadow: 
+    0 20px 45px -15px rgba(0, 0, 0, 0.8),
+    0 0 30px rgba(var(--accent-color-rgb), 0.15),
+    inset 0 0 20px rgba(255, 255, 255, 0.02);
 }
 
 .skill-category-title {
@@ -1370,10 +1406,13 @@ button {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--accent-cyan);
+  color: var(--accent-color);
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transform: translateZ(25px);
+  transform-style: preserve-3d;
+  transition: color 0.3s ease;
 }
 
 .skill-list {
@@ -1381,22 +1420,32 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  transform: translateZ(15px);
+  transform-style: preserve-3d;
 }
 
 .skill-item {
   padding: 0.3rem 0.7rem;
   border-radius: var(--radius-full);
-  background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 0.78rem;
   color: var(--text-secondary);
-  transition: all var(--transition-fast);
+  transform: translateZ(5px);
+  transform-style: preserve-3d;
+  transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.25s ease,
+              color 0.25s ease,
+              background 0.25s ease,
+              box-shadow 0.25s ease;
 }
 
 .skill-item:hover {
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.05);
+  transform: translateZ(28px) scale(1.08);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background: rgba(var(--accent-color-rgb), 0.1);
+  box-shadow: 0 5px 15px rgba(var(--accent-color-rgb), 0.25);
 }
 
 /* ════════════════════════════════════════
