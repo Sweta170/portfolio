@@ -1068,103 +1068,6 @@ class PortfolioApp {
 
     render();
   }
-}
-
-/* ════════════════════════════════════════
-   CYBERSOUNDSYNTH — Web Audio program synth
-   ════════════════════════════════════════ */
-class CyberSoundSynth {
-  constructor() {
-    this.ctx = null;
-    this.muted = true; // start muted
-  }
-
-  initContext() {
-    if (this.ctx) return;
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (AudioContext) {
-      this.ctx = new AudioContext();
-    }
-  }
-
-  toggleMute() {
-    this.initContext();
-    this.muted = !this.muted;
-    if (!this.muted && this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
-    }
-    return this.muted;
-  }
-
-  setMute(val) {
-    this.initContext();
-    this.muted = val;
-    if (!this.muted && this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
-    }
-  }
-
-  playTick() {
-    if (this.muted) return;
-    this.initContext();
-    if (!this.ctx) return;
-
-    try {
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1100, now);
-      osc.frequency.exponentialRampToValueAtTime(120, now + 0.04);
-
-      gain.gain.setValueAtTime(0.035, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      
-      osc.start(now);
-      osc.stop(now + 0.05);
-    } catch (e) {
-      console.warn("Audio Context Error:", e);
-    }
-  }
-
-  playSweep() {
-    if (this.muted) return;
-    this.initContext();
-    if (!this.ctx) return;
-
-    try {
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      const filter = this.ctx.createBiquadFilter();
-
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(55, now);
-      osc.frequency.exponentialRampToValueAtTime(280, now + 0.25);
-
-      filter.type = 'lowpass';
-      filter.Q.setValueAtTime(3, now);
-      filter.frequency.setValueAtTime(90, now);
-      filter.frequency.exponentialRampToValueAtTime(750, now + 0.25);
-
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.05, now + 0.06);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
-
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.27);
-    } catch (e) {
-      console.warn("Audio Context Error:", e);
-    }
-  }
 
   /* ──────────────── CODING SECTION 3D CANVAS ──────────────── */
 
@@ -1382,6 +1285,104 @@ class CyberSoundSynth {
       console.error("Coding 3D Canvas error:", err);
     }
   }
+}
+
+/* ════════════════════════════════════════
+   CYBERSOUNDSYNTH — Web Audio program synth
+   ════════════════════════════════════════ */
+class CyberSoundSynth {
+  constructor() {
+    this.ctx = null;
+    this.muted = true; // start muted
+  }
+
+  initContext() {
+    if (this.ctx) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext) {
+      this.ctx = new AudioContext();
+    }
+  }
+
+  toggleMute() {
+    this.initContext();
+    this.muted = !this.muted;
+    if (!this.muted && this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+    return this.muted;
+  }
+
+  setMute(val) {
+    this.initContext();
+    this.muted = val;
+    if (!this.muted && this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+
+  playTick() {
+    if (this.muted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1100, now);
+      osc.frequency.exponentialRampToValueAtTime(120, now + 0.04);
+
+      gain.gain.setValueAtTime(0.035, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      
+      osc.start(now);
+      osc.stop(now + 0.05);
+    } catch (e) {
+      console.warn("Audio Context Error:", e);
+    }
+  }
+
+  playSweep() {
+    if (this.muted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(55, now);
+      osc.frequency.exponentialRampToValueAtTime(280, now + 0.25);
+
+      filter.type = 'lowpass';
+      filter.Q.setValueAtTime(3, now);
+      filter.frequency.setValueAtTime(90, now);
+      filter.frequency.exponentialRampToValueAtTime(750, now + 0.25);
+
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.05, now + 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.27);
+    } catch (e) {
+      console.warn("Audio Context Error:", e);
+    }
+  }
+
 }
 
 // Initialize when DOM is ready
