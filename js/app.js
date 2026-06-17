@@ -97,6 +97,9 @@ class PortfolioApp {
 
     // Setup 3D Coding Profiles Canvas
     this.setupCoding3DCanvas();
+
+    // Fetch live coding profiles stats dynamically
+    this.updateCodingStats();
   }
 
   onPreloaderComplete() {
@@ -1284,6 +1287,117 @@ class PortfolioApp {
     } catch (err) {
       console.error("Coding 3D Canvas error:", err);
     }
+  }
+
+  /* ──────────────── DYNAMIC CODING STATS FETCHER ──────────────── */
+
+  updateCodingStats() {
+    console.log("Coding Stats: Fetching profiles dynamically...");
+
+    // 1. Fetch LeetCode Stats
+    // Solved Info
+    fetch('https://alfa-leetcode-api.onrender.com/Coder-tech/solved')
+      .then(res => {
+        if (!res.ok) throw new Error('LeetCode Solved Fetch Failed');
+        return res.json();
+      })
+      .then(data => {
+        if (data && data.solvedProblem !== undefined) {
+          const solvedEl = document.getElementById('lc-solved');
+          if (solvedEl) solvedEl.textContent = data.solvedProblem;
+
+          const easyEl = document.getElementById('lc-easy');
+          if (easyEl) easyEl.innerHTML = `${data.easySolved}<span class="stat-max">/950</span>`;
+
+          const medEl = document.getElementById('lc-medium');
+          if (medEl) medEl.innerHTML = `${data.mediumSolved}<span class="stat-max">/2069</span>`;
+
+          const hardEl = document.getElementById('lc-hard');
+          if (hardEl) hardEl.innerHTML = `${data.hardSolved}<span class="stat-max">/943</span>`;
+        }
+      })
+      .catch(err => console.warn('LeetCode Solved Dynamic Sync Error:', err));
+
+    // Profile & Contest Rating Info
+    fetch('https://alfa-leetcode-api.onrender.com/Coder-tech/contest')
+      .then(res => {
+        if (!res.ok) throw new Error('LeetCode Contest Fetch Failed');
+        return res.json();
+      })
+      .then(data => {
+        if (data && data.contestParticipation) {
+          const rating = data.contestParticipation.rating;
+          const globalRanking = data.contestParticipation.globalRanking;
+          const attended = data.contestParticipation.attendedContestsCount || 7;
+
+          const ratingEl = document.getElementById('lc-rating');
+          if (ratingEl && rating) ratingEl.textContent = Math.round(rating).toLocaleString();
+
+          const rankEl = document.getElementById('lc-global-rank');
+          if (rankEl && globalRanking) rankEl.textContent = globalRanking.toLocaleString();
+
+          const attendedEl = document.getElementById('lc-attended');
+          if (attendedEl) attendedEl.textContent = attended;
+
+          // Estimate percentile based on Global Ranking out of ~874,367 users
+          const totalContestants = 874367;
+          if (globalRanking) {
+            const topPercentile = ((globalRanking / totalContestants) * 100).toFixed(2);
+            const topEl = document.getElementById('lc-top');
+            if (topEl) topEl.textContent = `${topPercentile}%`;
+          }
+        }
+      })
+      .catch(err => console.warn('LeetCode Contest Dynamic Sync Error:', err));
+
+    // Base profile info for Rank
+    fetch('https://alfa-leetcode-api.onrender.com/Coder-tech')
+      .then(res => {
+        if (!res.ok) throw new Error('LeetCode Profile Fetch Failed');
+        return res.json();
+      })
+      .then(data => {
+        if (data && data.ranking) {
+          const rankEl = document.getElementById('lc-rank');
+          if (rankEl) rankEl.textContent = `Rank ${data.ranking.toLocaleString()}`;
+        }
+      })
+      .catch(err => console.warn('LeetCode Profile Dynamic Sync Error:', err));
+
+    // 2. Fetch GeeksforGeeks Stats
+    fetch('https://gfgstatscard.vercel.app/swetarfu1t?raw=true')
+      .then(res => {
+        if (!res.ok) throw new Error('GFG Stats Fetch Failed');
+        return res.json();
+      })
+      .then(data => {
+        if (data && data.total_problems_solved !== undefined) {
+          const solvedEl = document.getElementById('gfg-solved');
+          if (solvedEl) solvedEl.textContent = data.total_problems_solved;
+
+          const scoreEl = document.getElementById('gfg-score');
+          if (scoreEl && data.total_score !== undefined) scoreEl.textContent = data.total_score;
+
+          const basicEl = document.getElementById('gfg-basic');
+          if (basicEl && data.Basic !== undefined) basicEl.textContent = data.Basic;
+
+          const easyEl = document.getElementById('gfg-easy');
+          if (easyEl && data.Easy !== undefined) easyEl.textContent = data.Easy;
+
+          const medEl = document.getElementById('gfg-medium');
+          if (medEl && data.Medium !== undefined) medEl.textContent = data.Medium;
+
+          const hardEl = document.getElementById('gfg-hard');
+          if (hardEl && data.Hard !== undefined) hardEl.textContent = data.Hard;
+
+          const streakEl = document.getElementById('gfg-max-streak');
+          if (streakEl && data.pod_solved_longest_streak !== undefined) streakEl.textContent = `${data.pod_solved_longest_streak}d`;
+
+          const potdEl = document.getElementById('gfg-potd-solved');
+          if (potdEl && data.pod_correct_submissions_count !== undefined) potdEl.textContent = data.pod_correct_submissions_count;
+        }
+      })
+      .catch(err => console.warn('GeeksforGeeks Dynamic Sync Error:', err));
   }
 }
 
