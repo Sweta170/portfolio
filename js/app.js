@@ -94,6 +94,9 @@ class PortfolioApp {
 
     // Setup 3D Orbiting Skills cloud
     this.setupSkills3DCloud();
+
+    // Setup 3D Coding Profiles Canvas
+    this.setupCoding3DCanvas();
   }
 
   onPreloaderComplete() {
@@ -1160,6 +1163,223 @@ class CyberSoundSynth {
       osc.stop(now + 0.27);
     } catch (e) {
       console.warn("Audio Context Error:", e);
+    }
+  }
+
+  /* ──────────────── CODING SECTION 3D CANVAS ──────────────── */
+
+  setupCoding3DCanvas() {
+    try {
+      const canvas = document.getElementById('coding-3d-canvas');
+      if (!canvas) return;
+
+      const container = document.getElementById('coding-canvas-container');
+      if (!container) return;
+
+      if (typeof THREE === 'undefined') {
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+        container.style.color = 'var(--text-secondary)';
+        container.innerHTML = '<div style="text-align: center; padding: 2rem;">Offline fallback: Three.js failed to load. 🌐</div>';
+        return;
+      }
+
+      // Create scene, camera, renderer
+      const scene = new THREE.Scene();
+
+      const rect = container.getBoundingClientRect();
+      const width = rect.width || 450;
+      const height = rect.height || 450;
+      const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
+      camera.position.z = 100;
+
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        antialias: true,
+        alpha: true
+      });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
+      scene.add(ambientLight);
+
+      const pointLight1 = new THREE.PointLight(0xffa116, 5, 150); // Leetcode Orange light
+      pointLight1.position.set(45, 45, 45);
+      scene.add(pointLight1);
+
+      const pointLight2 = new THREE.PointLight(0x00e676, 5, 150); // GFG Green light
+      pointLight2.position.set(-45, -45, 45);
+      scene.add(pointLight2);
+
+      // Geometry: An Icosahedron representing coding / algorithmic structures
+      const geometry = new THREE.IcosahedronGeometry(18, 1);
+
+      // Material: Sleek semi-transparent dark metallic mesh
+      const material = new THREE.MeshStandardMaterial({
+        color: 0x050510,
+        emissive: 0x111125,
+        roughness: 0.1,
+        metalness: 0.9,
+        flatShading: true,
+        transparent: true,
+        opacity: 0.85
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      // Wireframe overlay: Custom lines with dual accent color gradients
+      const wireframeGeo = new THREE.WireframeGeometry(geometry);
+      const wireframeMat = new THREE.LineBasicMaterial({
+        color: 0x00d4ff, // Glowing cyan wireframe
+        transparent: true,
+        opacity: 0.5,
+        blending: THREE.AdditiveBlending
+      });
+      const wireframe = new THREE.LineSegments(wireframeGeo, wireframeMat);
+      mesh.add(wireframe);
+
+      // Orbiting coding particles / nodes
+      const particleCount = 100;
+      const particleGeo = new THREE.BufferGeometry();
+      const particlePositions = new Float32Array(particleCount * 3);
+      const particleSpeeds = [];
+
+      for (let i = 0; i < particleCount; i++) {
+        const theta = Math.random() * 2 * Math.PI;
+        const phi = Math.acos(Math.random() * 2 - 1);
+        const r = 25 + Math.random() * 15;
+
+        particlePositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+        particlePositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        particlePositions[i * 3 + 2] = r * Math.cos(phi);
+
+        particleSpeeds.push({
+          rSpeed: (Math.random() - 0.5) * 0.01,
+          thetaSpeed: Math.random() * 0.008 + 0.002,
+          phiSpeed: Math.random() * 0.008 + 0.002,
+          r: r,
+          theta: theta,
+          phi: phi
+        });
+      }
+
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+
+      // Visual particle circles
+      const canvasDot = document.createElement('canvas');
+      canvasDot.width = 16;
+      canvasDot.height = 16;
+      const ctxDot = canvasDot.getContext('2d');
+      const grad = ctxDot.createRadialGradient(8, 8, 0, 8, 8, 8);
+      grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctxDot.fillStyle = grad;
+      ctxDot.fillRect(0, 0, 16, 16);
+
+      const pTexture = new THREE.CanvasTexture(canvasDot);
+      const pMaterial = new THREE.PointsMaterial({
+        color: 0x00d4ff, // Cyan nodes
+        size: 2.2,
+        map: pTexture,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+
+      const particleSystem = new THREE.Points(particleGeo, pMaterial);
+      scene.add(particleSystem);
+
+      // Track mouse position to control rotation angles
+      let angleX = 0.004;
+      let angleY = 0.004;
+      let targetAngleX = 0.002;
+      let targetAngleY = 0.002;
+
+      container.addEventListener('mousemove', (e) => {
+        const cRect = container.getBoundingClientRect();
+        const mx = e.clientX - cRect.left - cRect.width / 2;
+        const my = e.clientY - cRect.top - cRect.height / 2;
+
+        targetAngleY = mx * 0.00002;
+        targetAngleX = -my * 0.00002;
+      });
+
+      container.addEventListener('mouseleave', () => {
+        targetAngleX = 0.002;
+        targetAngleY = 0.002;
+      });
+
+      // Handle Resize
+      const resizeObserver = new ResizeObserver(() => {
+        const newRect = container.getBoundingClientRect();
+        const w = newRect.width || 450;
+        const h = newRect.height || 450;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      });
+      resizeObserver.observe(container);
+
+      // Render Loop
+      const animate = () => {
+        requestAnimationFrame(animate);
+
+        // Smooth rotation damping
+        angleX += (targetAngleX - angleX) * 0.05;
+        angleY += (targetAngleY - angleY) * 0.05;
+
+        mesh.rotation.x += angleX;
+        mesh.rotation.y += angleY;
+        particleSystem.rotation.x += angleX * 0.5;
+        particleSystem.rotation.y += angleY * 0.5;
+
+        // Dynamic light pulsation
+        const time = Date.now() * 0.0015;
+        pointLight1.intensity = 3.5 + Math.sin(time) * 1.5;
+        pointLight2.intensity = 3.5 + Math.cos(time) * 1.5;
+
+        // Rotate wireframe color accent based on active color preset
+        const preset = document.body.className;
+        if (preset.includes('theme-rose')) {
+          wireframeMat.color.setHex(0xff007f);
+          pMaterial.color.setHex(0x9d4edd);
+        } else if (preset.includes('theme-emerald')) {
+          wireframeMat.color.setHex(0x00f5d4);
+          pMaterial.color.setHex(0x00bbf9);
+        } else if (preset.includes('theme-amber')) {
+          wireframeMat.color.setHex(0xf59e0b);
+          pMaterial.color.setHex(0xf43f5e);
+        } else {
+          wireframeMat.color.setHex(0x00d4ff);
+          pMaterial.color.setHex(0x8b5cf6);
+        }
+
+        // Update positions of orbiting particles
+        const posAttr = particleGeo.attributes.position;
+        const positions = posAttr.array;
+
+        for (let i = 0; i < particleCount; i++) {
+          const speed = particleSpeeds[i];
+          speed.theta += speed.thetaSpeed;
+          speed.phi += speed.phiSpeed;
+
+          positions[i * 3] = speed.r * Math.sin(speed.phi) * Math.cos(speed.theta);
+          positions[i * 3 + 1] = speed.r * Math.sin(speed.phi) * Math.sin(speed.theta);
+          positions[i * 3 + 2] = speed.r * Math.cos(speed.phi);
+        }
+        posAttr.needsUpdate = true;
+
+        renderer.render(scene, camera);
+      };
+
+      animate();
+
+    } catch (err) {
+      console.error("Coding 3D Canvas error:", err);
     }
   }
 }
