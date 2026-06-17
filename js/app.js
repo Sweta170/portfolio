@@ -1300,8 +1300,8 @@ class PortfolioApp {
     const buttons = document.querySelectorAll('.cube-control-btn');
     if (!cube || !scene) return;
 
-    let rx = 0; // rotation X
-    let ry = 0; // rotation Y
+    let rx = 0;
+    let ry = 0;
     let isDragging = false;
     let startX = 0;
     let startY = 0;
@@ -1312,52 +1312,52 @@ class PortfolioApp {
     let isSnapping = false;
     let snapTimeout = null;
 
-    // Direct mapping of button face to rotation target
     const faceRotations = {
-      'front': { rx: 0, ry: 0 },      // LeetCode (0 deg)
-      'back': { rx: 0, ry: 180 },     // GFG (180 deg)
-      'left': { rx: 0, ry: 90 },      // Total Solved (90 deg)
-      'right': { rx: 0, ry: -90 },    // Milestones (-90 deg)
-      'top': { rx: -90, ry: 0 }       // GSSoC (X: -90, Y: 0 deg)
+      'front': { rx: 0,   ry: 0 },
+      'back':  { rx: 0,   ry: 180 },
+      'left':  { rx: 0,   ry: 90 },
+      'right': { rx: 0,   ry: -90 },
+      'top':   { rx: -90, ry: 0 }
+    };
+
+    const getShortestPath = (current, target) => {
+      return ((target - current) % 360 + 540) % 360 - 180;
+    };
+
+    const getActiveFace = () => {
+      const x = rx * Math.PI / 180;
+      const y = ry * Math.PI / 180;
+
+      const candidates = [
+        { face: 'front', z: Math.cos(x) * Math.cos(y) },
+        { face: 'back',  z: -Math.cos(x) * Math.cos(y) },
+        { face: 'left',  z: Math.cos(x) * Math.sin(y) },
+        { face: 'right', z: -Math.cos(x) * Math.sin(y) },
+        { face: 'top',   z: -Math.sin(x) }
+      ];
+
+      let maxZ = -Infinity;
+      let activeFace = 'front';
+      candidates.forEach(c => {
+        if (c.z > maxZ) {
+          maxZ = c.z;
+          activeFace = c.face;
+        }
+      });
+      return activeFace;
     };
 
     const updateActiveButton = () => {
-      let activeFace = 'front';
-      
-      // If tilted significantly up, active face is Top (GSSoC)
-      if (rx < -45) {
-        activeFace = 'top';
-      } else {
-        // Normalize ry to be within [0, 360) for face calculation
-        let normY = ((ry % 360) + 360) % 360;
-        
-        // Determine nearest face based on normalized Y rotation
-        if (normY >= 45 && normY < 135) {
-          activeFace = 'left'; // 90 deg
-        } else if (normY >= 135 && normY < 225) {
-          activeFace = 'back'; // 180 deg
-        } else if (normY >= 225 && normY < 315) {
-          activeFace = 'right'; // 270 deg (which is -90 deg)
-        } else {
-          activeFace = 'front'; // 0 or 360 deg
-        }
-      }
-
+      const face = getActiveFace();
       buttons.forEach(btn => {
-        if (btn.dataset.face === activeFace) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
+        btn.classList.toggle('active', btn.dataset.face === face);
       });
     };
 
-    const applyTransform = (smooth = true) => {
-      if (smooth) {
-        cube.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
-      } else {
-        cube.style.transition = 'none';
-      }
+    const applyTransform = (smooth) => {
+      cube.style.transition = smooth
+        ? 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)'
+        : 'none';
       cube.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
     };
 
@@ -1367,31 +1367,32 @@ class PortfolioApp {
       applyTransform(true);
       updateActiveButton();
 
-      // Delay clearing the snap flag to allow the transition to complete smoothly
       snapTimeout = setTimeout(() => {
         isSnapping = false;
         if (!isDragging && !isHovered) {
           startIdleRotation();
         }
-      }, 600); // matches 0.6s transition
+      }, 600);
     };
 
-    // Auto-rotation when idle
     const startIdleRotation = () => {
       if (idleRotationTimer) clearInterval(idleRotationTimer);
-      if (isSnapping) return; // Wait for snaps to complete
-      
+      if (isSnapping) return;
+
       idleRotationTimer = setInterval(() => {
         if (!isDragging && !isHovered && !isSnapping) {
-          // Settle rx to 0 for side faces, or -90 if showing the GSSoC (top) face
-          const targetRx = rx < -45 ? -90 : 0;
+          const activeFace = getActiveFace();
           
-          if (targetRx === 0) {
-            ry += 0.25; // slow horizontal rotation only when viewing side faces
+          if (activeFace === 'top') {
+            const snapRy = Math.round(ry / 360) * 360;
+            rx += (-90 - rx) * 0.05;
+            ry += (snapRy - ry) * 0.05;
+          } else {
+            rx += (0 - rx) * 0.05;
+            ry += 0.25;
           }
-          
-          rx += (targetRx - rx) * 0.05; // slowly settle rx to its target
-          applyTransform(false); // direct updates for smooth auto-rotation
+
+          applyTransform(false);
           updateActiveButton();
         }
       }, 30);
@@ -1404,89 +1405,63 @@ class PortfolioApp {
       }
     };
 
-    // Drag handlers
-    const dragStart = (clientX, clientY) => {
+    const dragStart = (cx, cy) => {
       isDragging = true;
       isSnapping = false;
       if (snapTimeout) clearTimeout(snapTimeout);
-      startX = clientX;
-      startY = clientY;
+      startX = cx;
+      startY = cy;
       startRX = rx;
       startRY = ry;
       stopIdleRotation();
-      
-      if (this.soundSynth) {
-        this.soundSynth.playTick();
-      }
+      if (this.soundSynth) this.soundSynth.playTick();
     };
 
-    const dragMove = (clientX, clientY) => {
+    const dragMove = (cx, cy) => {
       if (!isDragging) return;
-      const dx = clientX - startX;
-      const dy = clientY - startY;
-
-      // Sensitivity factor
+      const dx = cx - startX;
+      const dy = cy - startY;
       const sensitivity = 0.5;
+
       rx = startRX - dy * sensitivity;
       ry = startRY + dx * sensitivity;
 
-      // Clamp X rotation to allow vertical drag to top face but prevent full flipping
-      rx = Math.max(-90, Math.min(90, rx));
-
-      applyTransform(false); // Raw interaction should be direct and instant
+      applyTransform(false);
     };
 
     const dragEnd = () => {
       if (!isDragging) return;
       isDragging = false;
-      
-      // Calculate and snap to the nearest exact face target
-      if (rx < -45) {
-        // Snap to top face (GSSoC)
-        rx = -90;
-        ry = Math.round(ry / 360) * 360;
-      } else {
-        // Snap to nearest side face
-        rx = 0;
-        let normY = ((ry % 360) + 360) % 360;
-        let targetY = 0;
-        if (normY >= 45 && normY < 135) {
-          targetY = 90; // left
-        } else if (normY >= 135 && normY < 225) {
-          targetY = 180; // back
-        } else if (normY >= 225 && normY < 315) {
-          targetY = 270; // right
-        } else {
-          targetY = 0;
-        }
 
-        const diff = ((targetY - ry) % 360 + 540) % 360 - 180;
-        ry += diff;
+      const activeFace = getActiveFace();
+      const target = faceRotations[activeFace];
+      if (target) {
+        rx += getShortestPath(rx, target.rx);
+        ry += getShortestPath(ry, target.ry);
       }
 
       triggerSnap();
-
-      if (this.soundSynth) {
-        this.soundSynth.playSweep();
-      }
+      if (this.soundSynth) this.soundSynth.playSweep();
     };
 
-    // Mouse events
+    // Events
     scene.addEventListener('mousedown', (e) => {
       if (e.target.closest('a, button')) return;
       e.preventDefault();
       dragStart(e.clientX, e.clientY);
     });
 
-    window.addEventListener('mousemove', (e) => {
+    const handleMouseMove = (e) => {
       if (isDragging) dragMove(e.clientX, e.clientY);
-    });
+    };
 
-    window.addEventListener('mouseup', () => {
+    const handleMouseUp = () => {
       if (isDragging) dragEnd();
-    });
+    };
 
-    // Touch events
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
     scene.addEventListener('touchstart', (e) => {
       if (e.target.closest('a, button')) return;
       if (e.touches.length === 1) {
@@ -1494,18 +1469,20 @@ class PortfolioApp {
       }
     }, { passive: true });
 
-    window.addEventListener('touchmove', (e) => {
+    const handleTouchMove = (e) => {
       if (isDragging && e.touches.length === 1) {
         if (e.cancelable) e.preventDefault();
         dragMove(e.touches[0].clientX, e.touches[0].clientY);
       }
-    }, { passive: false });
+    };
 
-    window.addEventListener('touchend', () => {
+    const handleTouchEnd = () => {
       if (isDragging) dragEnd();
-    });
+    };
 
-    // Hover detection to pause auto-rotate
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+
     scene.addEventListener('mouseenter', () => {
       isHovered = true;
       stopIdleRotation();
@@ -1513,40 +1490,31 @@ class PortfolioApp {
 
     scene.addEventListener('mouseleave', () => {
       isHovered = false;
-      if (!isDragging && !isSnapping) {
-        startIdleRotation();
-      }
+      if (!isDragging && !isSnapping) startIdleRotation();
     });
 
-    // Controls Buttons
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
         const face = btn.dataset.face;
-        const targets = faceRotations[face];
-        if (targets) {
-          rx = targets.rx;
-          
-          if (face === 'top') {
-            ry = Math.round(ry / 360) * 360;
-          } else {
-            const targetY = targets.ry;
-            const diff = ((targetY - ry) % 360 + 540) % 360 - 180;
-            ry += diff;
-          }
+        const target = faceRotations[face];
+        if (target) {
+          isSnapping = true;
+          if (snapTimeout) clearTimeout(snapTimeout);
+          stopIdleRotation();
+
+          rx += getShortestPath(rx, target.rx);
+          ry += getShortestPath(ry, target.ry);
 
           triggerSnap();
-          
+
           buttons.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
 
-          if (this.soundSynth) {
-            this.soundSynth.playSweep();
-          }
+          if (this.soundSynth) this.soundSynth.playSweep();
         }
       });
     });
 
-    // Start idle rotation immediately
     startIdleRotation();
   }
 
