@@ -51,7 +51,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=3.0" />
+  <link rel="stylesheet" href="css/styles.css?v=3.1" />
 </head>
 <body>
 
@@ -661,6 +661,61 @@
                     <span class="footer-badge">Consistency</span>
                   </div>
                 </div>
+
+                <!-- Face 5: GSSoC (Top) -->
+                <div class="cube-face face-top gssoc-card">
+                  <div class="cube-face-glow"></div>
+                  <!-- GSSoC Info -->
+                  <div class="platform-info-header">
+                    <div class="platform-title">
+                      <span class="platform-icon teal">💻</span>
+                      <h3>GSSoC '26</h3>
+                    </div>
+                    <span class="platform-badge" id="gssoc-rank">Rank #13,514</span>
+                  </div>
+                  
+                  <div class="cube-stats-main">
+                    <div class="cube-radial-progress gssoc-border">
+                      <span class="cube-solved-num" id="gssoc-score">285</span>
+                      <span class="cube-solved-label">Score</span>
+                    </div>
+                    
+                    <div class="cube-stats-breakdown">
+                      <div class="breakdown-row basic" style="border-left-color: var(--accent-cyan);">
+                        <span>Bounty Tasks</span>
+                        <span id="gssoc-bounty">200</span>
+                      </div>
+                      <div class="breakdown-row easy" style="border-left-color: var(--accent-emerald);">
+                        <span>PR Merged</span>
+                        <span id="gssoc-pr">0</span>
+                      </div>
+                      <div class="breakdown-row medium" style="border-left-color: var(--accent-amber);">
+                        <span>Tier</span>
+                        <span>Starter</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="cube-pills-grid">
+                    <div class="cube-pill">
+                      <span class="pill-lbl">Badges</span>
+                      <span class="pill-val" id="gssoc-badges">5</span>
+                    </div>
+                    <div class="cube-pill">
+                      <span class="pill-lbl">Streak</span>
+                      <span class="pill-val">0w</span>
+                    </div>
+                    <div class="cube-pill">
+                      <span class="pill-lbl">Track</span>
+                      <span class="pill-val" style="font-size: 0.68rem; font-weight: 700;">Open Source</span>
+                    </div>
+                  </div>
+                  
+                  <div class="cube-face-footer">
+                    <span class="footer-badge">GirlScript</span>
+                    <a href="https://gssoc.girlscript.org/profile/1eaa8f18-7b8a-4561-9b6d-341c5ad3c184" target="_blank" rel="noopener" class="cube-link">Verify Profile ↗</a>
+                  </div>
+                </div>
                 
               </div>
             </div>
@@ -669,6 +724,7 @@
             <div class="cube-controls">
               <button class="cube-control-btn active" data-face="front" id="btn-face-lc">LeetCode</button>
               <button class="cube-control-btn" data-face="back" id="btn-face-gfg">GeeksforGeeks</button>
+              <button class="cube-control-btn" data-face="top" id="btn-face-gssoc">GSSoC</button>
               <button class="cube-control-btn" data-face="left" id="btn-face-over">Total Solved</button>
               <button class="cube-control-btn" data-face="right" id="btn-face-ach">Milestones</button>
             </div>

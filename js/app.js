@@ -1315,23 +1315,30 @@ class PortfolioApp {
       'front': { rx: 0, ry: 0 },      // LeetCode (0 deg)
       'back': { rx: 0, ry: 180 },     // GFG (180 deg)
       'left': { rx: 0, ry: 90 },      // Total Solved (90 deg)
-      'right': { rx: 0, ry: -90 }     // Milestones (-90 deg)
+      'right': { rx: 0, ry: -90 },    // Milestones (-90 deg)
+      'top': { rx: -90, ry: 0 }       // GSSoC (X: -90, Y: 0 deg)
     };
 
     const updateActiveButton = () => {
-      // Normalize ry to be within [0, 360) for face calculation
-      let normY = ((ry % 360) + 360) % 360;
-      
-      // Determine nearest face based on normalized Y rotation
       let activeFace = 'front';
-      if (normY >= 45 && normY < 135) {
-        activeFace = 'left'; // 90 deg
-      } else if (normY >= 135 && normY < 225) {
-        activeFace = 'back'; // 180 deg
-      } else if (normY >= 225 && normY < 315) {
-        activeFace = 'right'; // 270 deg (which is -90 deg)
+      
+      // If tilted significantly up, active face is Top (GSSoC)
+      if (rx < -45) {
+        activeFace = 'top';
       } else {
-        activeFace = 'front'; // 0 or 360 deg
+        // Normalize ry to be within [0, 360) for face calculation
+        let normY = ((ry % 360) + 360) % 360;
+        
+        // Determine nearest face based on normalized Y rotation
+        if (normY >= 45 && normY < 135) {
+          activeFace = 'left'; // 90 deg
+        } else if (normY >= 135 && normY < 225) {
+          activeFace = 'back'; // 180 deg
+        } else if (normY >= 225 && normY < 315) {
+          activeFace = 'right'; // 270 deg (which is -90 deg)
+        } else {
+          activeFace = 'front'; // 0 or 360 deg
+        }
       }
 
       buttons.forEach(btn => {
@@ -1396,8 +1403,8 @@ class PortfolioApp {
       rx = startRX - dy * sensitivity;
       ry = startRY + dx * sensitivity;
 
-      // Clamp X rotation to prevent the cube from flipping upside down
-      rx = Math.max(-35, Math.min(35, rx));
+      // Clamp X rotation to allow vertical drag to top face but prevent full flipping
+      rx = Math.max(-90, Math.min(90, rx));
 
       applyTransform(false); // Raw interaction should be direct and instant
     };
@@ -1471,11 +1478,15 @@ class PortfolioApp {
         if (targets) {
           rx = targets.rx;
           
-          // Math to rotate to nearest representation of the face's target degree
-          // to avoid spin-backs when clicking buttons
-          const targetY = targets.ry;
-          const diff = ((targetY - ry) % 360 + 540) % 360 - 180;
-          ry += diff;
+          if (face === 'top') {
+            // Snap Y to the nearest multiple of 360 to keep GSSoC face upright
+            ry = Math.round(ry / 360) * 360;
+          } else {
+            // Math to rotate to nearest representation of the face's target degree
+            const targetY = targets.ry;
+            const diff = ((targetY - ry) % 360 + 540) % 360 - 180;
+            ry += diff;
+          }
 
           applyTransform(true);
           

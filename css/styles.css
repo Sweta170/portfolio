@@ -3144,6 +3144,8 @@ body.theme-amber {
 .face-back   { transform: rotateY(180deg) translateZ(190px); }
 .face-left   { transform: rotateY(-90deg) translateZ(190px); }
 .face-right  { transform: rotateY(90deg) translateZ(190px); }
+.face-top    { transform: rotateX(90deg) translateZ(190px); }
+.face-bottom { transform: rotateX(-90deg) translateZ(190px); }
 
 /* Custom Brand Highlights */
 .cube-face.leetcode-card {
@@ -3159,6 +3161,17 @@ body.theme-amber {
 .cube-face.gfg-card:hover {
   border-color: rgba(48, 141, 70, 0.45);
   box-shadow: 0 0 30px rgba(48, 141, 70, 0.08), var(--shadow-lg);
+}
+.cube-face.gssoc-card {
+  border-color: rgba(0, 191, 165, 0.15);
+}
+.cube-face.gssoc-card:hover {
+  border-color: rgba(0, 191, 165, 0.35);
+  box-shadow: 0 0 30px rgba(0, 191, 165, 0.08), var(--shadow-lg);
+}
+.cube-radial-progress.gssoc-border {
+  border-color: rgba(0, 191, 165, 0.25);
+  box-shadow: 0 0 15px rgba(0, 191, 165, 0.03), inset 0 0 15px rgba(0, 0, 0, 0.4);
 }
 .cube-face.overview-card {
   border-color: rgba(0, 212, 255, 0.15);
@@ -3509,6 +3522,8 @@ body.theme-amber {
   .face-back   { transform: rotateY(180deg) translateZ(150px); }
   .face-left   { transform: rotateY(-90deg) translateZ(150px); }
   .face-right  { transform: rotateY(90deg) translateZ(150px); }
+  .face-top    { transform: rotateX(90deg) translateZ(150px); }
+  .face-bottom { transform: rotateX(-90deg) translateZ(150px); }
   
   .cube-radial-progress {
     width: 90px;
