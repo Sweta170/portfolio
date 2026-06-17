@@ -74,8 +74,8 @@ class AIChatbot {
       'Tell me about Sweta',
       'What projects has she built?',
       'What are her skills?',
+      'Coding profiles?',
       'How to contact her?',
-      'Tell me about Pharma Desk',
       'Research publications?'
     ];
 
@@ -332,6 +332,21 @@ class AIChatbot {
         🐳 <strong>DevOps &amp; Continuous Integration</strong> (Docker/CI-CD)<br>
         📊 <strong>Algorithmic Toolbox</strong> (UC San Diego • Coursera)<br><br>
         All credentials have direct verification links in the Certifications section of the page!`;
+    }
+
+    // Coding Profiles / LeetCode / GeeksforGeeks
+    if (this.match(q, ['leetcode', 'geeksforgeeks', 'gfg', 'coding profile', 'dsa', 'competitive programming', 'problem solving', 'solved'])) {
+      return `🏆 <strong>Coding Profiles &amp; Problem Solving</strong><br><br>
+        💻 <strong>LeetCode Profile:</strong><br>
+        ✨ Username: <a href="https://leetcode.com/u/Coder-tech/" target="_blank" style="color: #ffa116; font-weight: 600;">@Coder-tech ↗</a><br>
+        ✨ Problems Solved: <strong>293+</strong> (Easy: 130, Medium: 137, Hard: 26)<br>
+        ✨ Contest Rating: <strong>1,550</strong> (Top 32.16% global ranking)<br>
+        ✨ Attended: 7 contests, Max streak: 12 days, 176 submissions in the past year.<br><br>
+        💚 <strong>GeeksforGeeks Profile:</strong><br>
+        ✨ Username: <a href="https://www.geeksforgeeks.org/profile/swetarfu1t?tab=activity" target="_blank" style="color: #00e676; font-weight: 600;">@swetarfu1t ↗</a><br>
+        ✨ Problems Solved: <strong>136+</strong> (Basic: 28, Easy: 54, Medium: 51, Hard: 3)<br>
+        ✨ Coding Score: <strong>355</strong> | Institute Rank: <strong>5892</strong><br><br>
+        Sweta has solid problem-solving skills in Data Structures and Algorithms! You can find the fully interactive stats in the Coding Profiles section on this page!`;
     }
 
     // Contact

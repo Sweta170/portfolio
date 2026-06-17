@@ -811,7 +811,7 @@ class PortfolioApp {
     
     // Event delegation: Play high frequency tick on hovering interactive items
     document.addEventListener('mouseover', (e) => {
-      const target = e.target.closest('a, button, .project-card, .skill-item, .tech-tag, .theme-opt, .chat-suggestion');
+      const target = e.target.closest('a, button, .project-card, .skill-item, .tech-tag, .theme-opt, .chat-suggestion, .coding-card, .stat-pill');
       if (target && this.soundSynth) {
         this.soundSynth.playTick();
       }
