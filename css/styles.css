@@ -237,13 +237,12 @@ button {
 @media (min-width: 1280px) {
   #main-nav {
     top: 1.5rem;
-    left: auto;
-    right: 2rem;
-    transform: translateY(-20px);
+    left: 50%;
+    transform: translate(-50%, -20px);
     padding: 0;
   }
   #main-nav.visible {
-    transform: translateY(0);
+    transform: translate(-50%, 0);
   }
 }
 
@@ -1166,10 +1165,42 @@ button {
   margin: 4rem auto 0;
 }
 
-.certifications-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-  gap: 1.5rem;
+.certifications-sphere-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1500px;
+  height: 550px;
+  overflow: visible;
+  margin-top: 2rem;
+  position: relative;
+}
+
+.certifications-sphere {
+  position: relative;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  animation: rotateSphere 25s linear infinite;
+}
+
+@keyframes rotateSphere {
+  from { transform: rotateY(0deg) rotateX(10deg); }
+  to { transform: rotateY(360deg) rotateX(10deg); }
+}
+
+.certifications-sphere:hover {
+  animation-play-state: paused;
+}
+
+.cert-card.sphere-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 280px;
+  margin-top: -95px; /* Adjust based on height */
+  margin-left: -140px;
+  /* Hover transforms might clash with JS transforms, so we manage them */
 }
 
 .cert-card {
@@ -1258,91 +1289,167 @@ button {
   margin-top: auto;
 }
 
-/* ── Services Grid & Cards ── */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.service-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  padding: 2.2rem 1.75rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  transition: border-color var(--transition-base), transform var(--transition-base), background var(--transition-base), box-shadow var(--transition-base);
-  position: relative;
-  overflow: hidden;
-  pointer-events: auto;
-}
-
-.service-card:hover {
-  border-color: var(--border-medium);
-  background: var(--bg-glass-hover);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), var(--shadow-glow-purple);
-  transform: translateY(-4px);
-}
-
-.service-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--gradient-primary);
-  opacity: 0;
-  transition: opacity var(--transition-base);
-}
-
-.service-card:hover::before {
-  opacity: 1;
-}
-
-.service-icon {
-  width: 3.2rem;
-  height: 3.2rem;
-  border-radius: var(--radius-md);
-  background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
+/* ── 3D Orbiting Services Constellation ── */
+.orbit-system {
+  perspective: 1200px;
+  height: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6rem;
-  margin-bottom: 1.5rem;
-  transition: all var(--transition-fast);
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  overflow: visible;
 }
 
-.service-card:hover .service-icon {
-  border-color: var(--accent-purple);
-  background: rgba(139, 92, 246, 0.06);
-  transform: scale(1.05);
+.orbit-center {
+  position: relative;
+  transform-style: preserve-3d;
+  animation: orbit-spin 35s linear infinite;
+  width: 0;
+  height: 0;
 }
 
-.service-title {
+@keyframes orbit-spin {
+  from { transform: rotateX(15deg) rotateY(0deg); }
+  to { transform: rotateX(15deg) rotateY(360deg); }
+}
+
+.orbit-pivot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-style: preserve-3d;
+}
+
+.pivot-1 { transform: rotateY(0deg) translateZ(320px); }
+.pivot-2 { transform: rotateY(90deg) translateZ(320px); }
+.pivot-3 { transform: rotateY(180deg) translateZ(320px); }
+.pivot-4 { transform: rotateY(270deg) translateZ(320px); }
+
+.orbit-unpivot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-style: preserve-3d;
+}
+
+.unpivot-1 { transform: rotateY(0deg); }
+.unpivot-2 { transform: rotateY(-90deg); }
+.unpivot-3 { transform: rotateY(-180deg); }
+.unpivot-4 { transform: rotateY(-270deg); }
+
+.orbit-counter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-style: preserve-3d;
+  animation: orbit-counter-spin 35s linear infinite;
+}
+
+@keyframes orbit-counter-spin {
+  from { transform: rotateY(0deg) rotateX(-15deg); }
+  to { transform: rotateY(-360deg) rotateX(-15deg); }
+}
+
+.orbit-card {
+  position: absolute;
+  top: -125px;
+  left: -130px;
+  width: 260px;
+  height: 250px;
+  background: rgba(15, 15, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+  padding: 1.4rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.4s ease, background 0.4s ease;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.orbit-system:hover .orbit-center,
+.orbit-system:hover .orbit-counter {
+  animation-play-state: paused;
+}
+
+.orbit-card:hover {
+  transform: scale(1.15) translateZ(40px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+  background: rgba(20, 20, 40, 0.9);
+  z-index: 10;
+}
+
+.card-cyan:hover { border-color: rgba(0, 255, 255, 0.6); box-shadow: 0 20px 60px rgba(0, 255, 255, 0.2); }
+.card-purple:hover { border-color: rgba(168, 85, 247, 0.6); box-shadow: 0 20px 60px rgba(168, 85, 247, 0.2); }
+.card-emerald:hover { border-color: rgba(16, 185, 129, 0.6); box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2); }
+.card-gold:hover { border-color: rgba(245, 158, 11, 0.6); box-shadow: 0 20px 60px rgba(245, 158, 11, 0.2); }
+
+.orbit-icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.8rem;
+  filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+  transition: transform 0.3s ease;
+}
+
+.orbit-card:hover .orbit-icon {
+  transform: scale(1.1) translateY(-5px);
+}
+
+.orbit-title {
   font-family: var(--font-heading);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   color: var(--text-primary);
-  letter-spacing: 0.01em;
 }
 
-.service-desc {
-  font-size: 0.82rem;
+.orbit-desc {
+  font-size: 0.78rem;
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.5;
   font-weight: 300;
+}
+
+@media (max-width: 900px) {
+  .orbit-system {
+    height: auto;
+    perspective: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  .orbit-center {
+    width: 100%;
+    height: auto;
+    animation: none !important;
+    transform: none !important;
+  }
+  .orbit-pivot, .orbit-unpivot, .orbit-counter {
+    position: relative;
+    transform: none !important;
+    animation: none !important;
+  }
+  .orbit-card {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+  }
 }
 
 /* ── Skills Section ── */
 .skills-section {
   max-width: 1100px;
-  margin: 4rem auto 0;
+  margin: 6rem auto 0;
+  padding-top: 2rem;
 }
 
 .skills-grid {

@@ -25,10 +25,10 @@ class ParticleSystem {
 
     // Rotations for each scene
     this.rotations = [
-      { x: -0.2, y: 0, z: -0.3, speedX: 0.0005, speedY: 0.004 },  // Scene 0: Tilted Ring
+      { x: 0, y: 0, z: 0, speedX: 0.001, speedY: 0.003 },         // Scene 0: Neural Net
       { x: 0.1,  y: 0, z: 0,    speedX: 0.001,  speedY: 0.008 },  // Scene 1: Double Helix
-      { x: 0,    y: 0, z: 0,    speedX: 0.001,  speedY: 0.003 },  // Scene 2: Globe
-      { x: 0.3,  y: 0, z: 0.2,  speedX: 0.002,  speedY: 0.005 },  // Scene 3: Torus
+      { x: 0.4,  y: 0, z: 0,    speedX: 0.000,  speedY: 0.002 },  // Scene 2: Data Topography
+      { x: 0.3,  y: 0, z: 0.2,  speedX: 0.002,  speedY: 0.005 },  // Scene 3: Moebius Strip
       { x: 0.5,  y: 0, z: 0,    speedX: 0.000,  speedY: 0.004 },  // Scene 4: Funnel + Helix
       { x: 0.1,  y: 0, z: 0,    speedX: 0.0005, speedY: 0.001 },  // Scene 5: Work (Ambient)
       { x: 0.1,  y: 0, z: 0,    speedX: 0.0005, speedY: 0.001 },  // Scene 6: About (Ambient)
@@ -131,19 +131,21 @@ class ParticleSystem {
 
     switch (scene) {
       case 0: {
-        // Scene 0: Tilted Particle Ring around SVG cubes
+        // Scene 0: Interactive Neural Network / Node Graph
         if (index < 480) {
-          const theta = (index / 480) * Math.PI * 2;
-          const r = 190 + Math.sin(index * 8) * 6; // textured ring
-          const x0 = r * Math.cos(theta);
-          const y0 = Math.sin(index * 3) * 8;
-          const z0 = r * Math.sin(theta);
+          const clusterId = index % 6;
+          // Cluster centers
+          const clusterRadius = 150;
+          const cx = clusterRadius * Math.cos(clusterId * Math.PI / 3);
+          const cy = (clusterId % 2 === 0 ? 40 : -40);
+          const cz = clusterRadius * Math.sin(clusterId * Math.PI / 3);
           
-          // Apply slant (rotation around Z axis)
-          const tilt = -0.3;
-          const tx = x0 * Math.cos(tilt) - y0 * Math.sin(tilt);
-          const ty = x0 * Math.sin(tilt) + y0 * Math.cos(tilt);
-          return { x: tx, y: ty, z: z0, isAmbient: false };
+          // Scatter particles around cluster center deterministically
+          const seed1 = Math.sin(index * 12.345) * 60;
+          const seed2 = Math.cos(index * 67.890) * 60;
+          const seed3 = Math.sin(index * 42.123) * 60;
+          
+          return { x: cx + seed1, y: cy + seed2, z: cz + seed3, isAmbient: false };
         }
         break;
       }
@@ -164,34 +166,41 @@ class ParticleSystem {
       }
 
       case 2: {
-        // Scene 2: Sphere connections globe (using Golden Spiral distribution)
+        // Scene 2: Data Topography Terrain
         if (index < 500) {
-          const y = 1 - (index / 499) * 2;
-          const radius = Math.sqrt(1 - y * y);
-          const theta = index * 2.39996; // Golden angle in radians
-          return {
-            x: 160 * radius * Math.cos(theta),
-            y: 160 * y,
-            z: 160 * radius * Math.sin(theta),
-            isAmbient: false
-          };
+          // Create a 20x25 grid
+          const cols = 25;
+          const rows = 20;
+          const col = index % cols;
+          const row = Math.floor(index / cols);
+          
+          // Map to coordinates
+          const x = (col - cols / 2) * 16;
+          const z = (row - rows / 2) * 16;
+          
+          // Terrain wave height
+          const dist = Math.sqrt(x * x + z * z);
+          const y = Math.sin(dist * 0.05) * 40 + Math.cos(x * 0.08) * 20;
+          
+          return { x: x, y: y, z: z, isAmbient: false };
         }
         break;
       }
 
       case 3: {
-        // Scene 3: Torus (Doughnut wireframe)
+        // Scene 3: Moebius Strip
         if (index < 500) {
-          const u = (index % 25) * (Math.PI * 2 / 25); // Ring angle
-          const v = Math.floor(index / 25) * (Math.PI * 2 / 20); // Tube angle
-          const R = 135; // Major radius
-          const r = 40;  // Minor radius
-          return {
-            x: (R + r * Math.cos(v)) * Math.cos(u),
-            y: r * Math.sin(v),
-            z: (R + r * Math.cos(v)) * Math.sin(u),
-            isAmbient: false
-          };
+          const u = (index % 50) * (Math.PI * 2 / 50); // Angle around the loop
+          const v = (Math.floor(index / 50) - 5) * 8; // Width of the strip (-40 to +40)
+          
+          const R = 110; // Major radius
+          
+          // Moebius strip parametric equations
+          const x = (R + v * Math.cos(u / 2)) * Math.cos(u);
+          const y = v * Math.sin(u / 2);
+          const z = (R + v * Math.cos(u / 2)) * Math.sin(u);
+          
+          return { x: x, y: y, z: z, isAmbient: false };
         }
         break;
       }
@@ -402,6 +411,29 @@ class ParticleSystem {
     }
 
     switch (scene) {
+      case 0: {
+        // Neural Network connections
+        this.ctx.strokeStyle = 'rgba(0, 212, 255, 0.08)';
+        for (let i = 0; i < 480; i += 2) {
+          let connections = 0;
+          for (let j = i + 1; j < 480; j++) {
+            const dx = this.particles[i].x3d - this.particles[j].x3d;
+            const dy = this.particles[i].y3d - this.particles[j].y3d;
+            const dz = this.particles[i].z3d - this.particles[j].z3d;
+            const distSq = dx * dx + dy * dy + dz * dz;
+            if (distSq < 4000) {
+              this.ctx.beginPath();
+              this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+              this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
+              this.ctx.stroke();
+              connections++;
+              if (connections >= 4) break;
+            }
+          }
+        }
+        break;
+      }
+
       case 1: {
         // DNA Double Helix connections
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
@@ -430,47 +462,47 @@ class ParticleSystem {
       }
 
       case 2: {
-        // AI Connection Globe - connect nearest vertices in 3D space
-        this.ctx.strokeStyle = 'rgba(0, 212, 255, 0.08)';
-        for (let i = 0; i < 500; i += 2) {
-          let connections = 0;
-          for (let j = i + 1; j < 500; j++) {
-            const dx = this.particles[i].x3d - this.particles[j].x3d;
-            const dy = this.particles[i].y3d - this.particles[j].y3d;
-            const dz = this.particles[i].z3d - this.particles[j].z3d;
-            const d3dSq = dx * dx + dy * dy + dz * dz;
-            if (d3dSq < 1300) { // Near points in 3D
-              this.ctx.beginPath();
-              this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
-              this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
-              this.ctx.stroke();
-              connections++;
-              if (connections >= 3) break;
-            }
+        // Data Topography connections (Grid)
+        this.ctx.strokeStyle = 'rgba(139, 92, 246, 0.1)';
+        this.ctx.beginPath();
+        for (let i = 0; i < 500; i++) {
+          const cols = 25;
+          const col = i % cols;
+          const row = Math.floor(i / cols);
+          
+          // Connect right
+          if (col < cols - 1 && i + 1 < 500) {
+            this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+            this.ctx.lineTo(this.particles[i + 1].x, this.particles[i + 1].y);
+          }
+          // Connect down
+          if (row < 19 && i + cols < 500) {
+            this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+            this.ctx.lineTo(this.particles[i + cols].x, this.particles[i + cols].y);
           }
         }
+        this.ctx.stroke();
         break;
       }
 
       case 3: {
-        // Torus wireframe grid lines
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        // Moebius Strip wireframe grid lines
+        this.ctx.strokeStyle = 'rgba(0, 212, 255, 0.12)';
         this.ctx.beginPath();
         for (let i = 0; i < 500; i++) {
-          // Connect tube rings (minor circle)
-          const nextInTube = i + 1;
-          if (i % 25 !== 24) {
-            this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
-            this.ctx.lineTo(this.particles[nextInTube].x, this.particles[nextInTube].y);
-          } else {
-            this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
-            this.ctx.lineTo(this.particles[i - 24].x, this.particles[i - 24].y);
-          }
-
-          // Connect around Major Ring
-          const nextInMajor = (i + 25) % 500;
+          const cols = 50;
+          const col = i % cols;
+          
+          // Connect to next point along the loop
+          const nextU = (i % cols === cols - 1) ? (i - cols + 1) : (i + 1);
           this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
-          this.ctx.lineTo(this.particles[nextInMajor].x, this.particles[nextInMajor].y);
+          this.ctx.lineTo(this.particles[nextU].x, this.particles[nextU].y);
+          
+          // Connect across the width of the strip
+          if (i + cols < 500) {
+            this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+            this.ctx.lineTo(this.particles[i + cols].x, this.particles[i + cols].y);
+          }
         }
         this.ctx.stroke();
         break;

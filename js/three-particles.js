@@ -242,27 +242,30 @@ class ThreeParticleSystem {
     for (let i = 0; i < this.particleCount; i++) {
       let x = 0, y = 0, z = 0;
 
-      // Scenes 5, 6, 7 are ambient star fields
-      if (sceneIndex >= 5) {
+      // Scenes 6, 7 are ambient star fields
+      if (sceneIndex >= 6) {
         x = this.ambientPositions[i * 3];
         y = this.ambientPositions[i * 3 + 1];
         z = this.ambientPositions[i * 3 + 2];
       } else {
         switch (sceneIndex) {
-          case 0: {
-            // Scene 0: Hero Tilted Ring around Central Hologram
+          case 0:
+          case 5: {
+            // Scene 0 & 5: Interactive Neural Network / Node Graph around Hologram
             if (i < 1300) {
-              const theta = (i / 1300) * Math.PI * 2;
-              const r = 185 + Math.sin(i * 12) * 5; // textured wavy ring
-              const x0 = r * Math.cos(theta);
-              const y0 = Math.sin(i * 3) * 6;
-              const z0 = r * Math.sin(theta);
+              const clusterId = i % 8;
+              const clusterRadius = 220; // Wide enough to not clip the central crystal
+              const cx = clusterRadius * Math.cos(clusterId * Math.PI / 4);
+              const cy = (clusterId % 2 === 0 ? 60 : -60);
+              const cz = clusterRadius * Math.sin(clusterId * Math.PI / 4);
               
-              // Apply slant (rotation around Z axis)
-              const tilt = -0.3;
-              x = x0 * Math.cos(tilt) - y0 * Math.sin(tilt);
-              y = x0 * Math.sin(tilt) + y0 * Math.cos(tilt);
-              z = z0;
+              const seed1 = Math.sin(i * 12.345) * 80;
+              const seed2 = Math.cos(i * 67.890) * 80;
+              const seed3 = Math.sin(i * 42.123) * 80;
+              
+              x = cx + seed1;
+              y = cy + seed2;
+              z = cz + seed3;
             } else {
               // Outer scattering stars
               x = this.ambientPositions[i * 3] * 0.8;
@@ -297,15 +300,23 @@ class ThreeParticleSystem {
           }
 
           case 2: {
-            // Scene 2: Neural Net Fibonacci Globe
+            // Scene 2: Data Topography Terrain
             if (i < 1200) {
-              const r = 160;
-              const yVal = 1 - (i / 1199) * 2;
-              const radius = Math.sqrt(1 - yVal * yVal);
-              const theta = i * 2.39996; // Golden angle
-              x = r * radius * Math.cos(theta);
-              y = r * yVal;
-              z = r * radius * Math.sin(theta);
+              // Create a 30x40 grid
+              const cols = 40;
+              const rows = 30;
+              const col = i % cols;
+              const row = Math.floor(i / cols);
+              
+              const tx = (col - cols / 2) * 16;
+              const tz = (row - rows / 2) * 16;
+              
+              const dist = Math.sqrt(tx * tx + tz * tz);
+              const ty = Math.sin(dist * 0.05) * 40 + Math.cos(tx * 0.08) * 20 - 50;
+              
+              x = tx;
+              y = ty;
+              z = tz;
             } else {
               // Ambient orbiters
               x = this.ambientPositions[i * 3] * 0.9;
@@ -316,15 +327,19 @@ class ThreeParticleSystem {
           }
 
           case 3: {
-            // Scene 3: Torus Mesh
+            // Scene 3: Moebius Strip
             if (i < 1400) {
-              const u = (i % 50) * (Math.PI * 2 / 50); // Ring segment
-              const v = Math.floor(i / 50) * (Math.PI * 2 / 28); // Tube segment
-              const R = 130; // Major radius
-              const r = 38;  // Minor radius
-              x = (R + r * Math.cos(v)) * Math.cos(u);
-              y = r * Math.sin(v);
-              z = (R + r * Math.cos(v)) * Math.sin(u);
+              const cols = 70; // Angle around the loop
+              const rows = 20; // Width of the strip
+              
+              const u = (i % cols) * (Math.PI * 2 / cols);
+              const v = (Math.floor(i / cols) - rows / 2) * 6;
+              
+              const R = 150;
+              
+              x = (R + v * Math.cos(u / 2)) * Math.cos(u);
+              y = v * Math.sin(u / 2);
+              z = (R + v * Math.cos(u / 2)) * Math.sin(u);
             } else {
               x = this.ambientPositions[i * 3] * 0.8;
               y = this.ambientPositions[i * 3 + 1] * 0.8;
@@ -387,7 +402,40 @@ class ThreeParticleSystem {
       colorAttr.array[k] = 0;
     }
 
-    if (scene === 1) {
+    if (scene === 0 || scene === 5) {
+      // Neural Net connections
+      let lineCount = 0;
+      for (let i = 0; i < 1300 && lineCount < 200 && ptr < this.maxLinePoints - 2; i += 3) {
+        for (let j = i + 1; j < i + 150 && j < 1300; j++) {
+          const dx = positions[i * 3] - positions[j * 3];
+          const dy = positions[i * 3 + 1] - positions[j * 3 + 1];
+          const dz = positions[i * 3 + 2] - positions[j * 3 + 2];
+          const distSq = dx * dx + dy * dy + dz * dz;
+
+          if (distSq < 6000) {
+            lineAttr.array[ptr * 3] = positions[i * 3];
+            lineAttr.array[ptr * 3 + 1] = positions[i * 3 + 1];
+            lineAttr.array[ptr * 3 + 2] = positions[i * 3 + 2];
+            colorAttr.array[ptr * 3] = 0.0;
+            colorAttr.array[ptr * 3 + 1] = 0.83;
+            colorAttr.array[ptr * 3 + 2] = 1.0;
+            ptr++;
+
+            lineAttr.array[ptr * 3] = positions[j * 3];
+            lineAttr.array[ptr * 3 + 1] = positions[j * 3 + 1];
+            lineAttr.array[ptr * 3 + 2] = positions[j * 3 + 2];
+            colorAttr.array[ptr * 3] = 0.0;
+            colorAttr.array[ptr * 3 + 1] = 0.83;
+            colorAttr.array[ptr * 3 + 2] = 1.0;
+            ptr++;
+
+            lineCount++;
+            break;
+          }
+        }
+      }
+    }
+    else if (scene === 1) {
       // DNA Ladder connecting rungs: Connect Strand A (0-200) to Strand B (800-1000) every few nodes
       const step = 20;
       for (let i = 0; i < 400 && ptr < this.maxLinePoints - 2; i += step) {
@@ -416,60 +464,60 @@ class ThreeParticleSystem {
       }
     } 
     else if (scene === 2) {
-      // Connect close vertices on Fibonacci Globe
+      // Connect Topography Grid
       let lineCount = 0;
-      const step = 8;
-      for (let i = 0; i < 600 && lineCount < 100 && ptr < this.maxLinePoints - 2; i += step) {
-        for (let j = i + 1; j < i + 50 && j < 600; j++) {
-          const dx = positions[i * 3] - positions[j * 3];
-          const dy = positions[i * 3 + 1] - positions[j * 3 + 1];
-          const dz = positions[i * 3 + 2] - positions[j * 3 + 2];
-          const distSq = dx * dx + dy * dy + dz * dz;
+      const cols = 40;
+      const step = 2; // skip lines to save vertices
+      for (let i = 0; i < 1200 && lineCount < 200 && ptr < this.maxLinePoints - 4; i += step) {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        
+        // Connect right
+        if (col < cols - step && i + step < 1200) {
+          lineAttr.array[ptr * 3] = positions[i * 3];
+          lineAttr.array[ptr * 3 + 1] = positions[i * 3 + 1];
+          lineAttr.array[ptr * 3 + 2] = positions[i * 3 + 2];
+          colorAttr.array[ptr * 3] = 0.55;
+          colorAttr.array[ptr * 3 + 1] = 0.36;
+          colorAttr.array[ptr * 3 + 2] = 0.96;
+          ptr++;
 
-          if (distSq < 1500) {
-            lineAttr.array[ptr * 3] = positions[i * 3];
-            lineAttr.array[ptr * 3 + 1] = positions[i * 3 + 1];
-            lineAttr.array[ptr * 3 + 2] = positions[i * 3 + 2];
-            colorAttr.array[ptr * 3] = 0.0;
-            colorAttr.array[ptr * 3 + 1] = 0.83;
-            colorAttr.array[ptr * 3 + 2] = 1.0;
-            ptr++;
-
-            lineAttr.array[ptr * 3] = positions[j * 3];
-            lineAttr.array[ptr * 3 + 1] = positions[j * 3 + 1];
-            lineAttr.array[ptr * 3 + 2] = positions[j * 3 + 2];
-            colorAttr.array[ptr * 3] = 0.0;
-            colorAttr.array[ptr * 3 + 1] = 0.83;
-            colorAttr.array[ptr * 3 + 2] = 1.0;
-            ptr++;
-
-            lineCount++;
-            break;
-          }
+          lineAttr.array[ptr * 3] = positions[(i + step) * 3];
+          lineAttr.array[ptr * 3 + 1] = positions[(i + step) * 3 + 1];
+          lineAttr.array[ptr * 3 + 2] = positions[(i + step) * 3 + 2];
+          colorAttr.array[ptr * 3] = 0.55;
+          colorAttr.array[ptr * 3 + 1] = 0.36;
+          colorAttr.array[ptr * 3 + 2] = 0.96;
+          ptr++;
+          lineCount++;
         }
       }
     } 
     else if (scene === 3) {
-      // Torus Grid Lines (longitude ribs)
-      const step = 15;
-      for (let i = 0; i < 1000 && ptr < this.maxLinePoints - 2; i += step) {
-        const nextInMajor = (i + 50) % 1400;
+      // Moebius Strip lines
+      let lineCount = 0;
+      const cols = 70;
+      const step = 2;
+      for (let i = 0; i < 1400 && lineCount < 200 && ptr < this.maxLinePoints - 4; i += step) {
+        // Connect along the loop
+        const nextU = (i % cols >= cols - step) ? (i - cols + step) : (i + step);
         
         lineAttr.array[ptr * 3] = positions[i * 3];
         lineAttr.array[ptr * 3 + 1] = positions[i * 3 + 1];
         lineAttr.array[ptr * 3 + 2] = positions[i * 3 + 2];
-        colorAttr.array[ptr * 3] = 0.4;
-        colorAttr.array[ptr * 3 + 1] = 0.4;
-        colorAttr.array[ptr * 3 + 2] = 0.7;
+        colorAttr.array[ptr * 3] = 0.0;
+        colorAttr.array[ptr * 3 + 1] = 0.83;
+        colorAttr.array[ptr * 3 + 2] = 1.0;
         ptr++;
 
-        lineAttr.array[ptr * 3] = positions[nextInMajor * 3];
-        lineAttr.array[ptr * 3 + 1] = positions[nextInMajor * 3 + 1];
-        lineAttr.array[ptr * 3 + 2] = positions[nextInMajor * 3 + 2];
-        colorAttr.array[ptr * 3] = 0.4;
-        colorAttr.array[ptr * 3 + 1] = 0.4;
-        colorAttr.array[ptr * 3 + 2] = 0.7;
+        lineAttr.array[ptr * 3] = positions[nextU * 3];
+        lineAttr.array[ptr * 3 + 1] = positions[nextU * 3 + 1];
+        lineAttr.array[ptr * 3 + 2] = positions[nextU * 3 + 2];
+        colorAttr.array[ptr * 3] = 0.0;
+        colorAttr.array[ptr * 3 + 1] = 0.83;
+        colorAttr.array[ptr * 3 + 2] = 1.0;
         ptr++;
+        lineCount++;
       }
     }
 

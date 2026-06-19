@@ -101,6 +101,9 @@ class PortfolioApp {
     // Setup 3D Interactive Profile Cube
     this.setupProfile3DCube();
 
+    // Setup 3D Certifications Sphere
+    this.setupCertificationsSphere();
+
     // Fetch live coding profiles stats dynamically
     this.updateCodingStats();
   }
@@ -402,7 +405,8 @@ class PortfolioApp {
         }
       });
     }, {
-      threshold: 0.4,
+      threshold: 0.1,
+      rootMargin: "-20% 0px -60% 0px",
       root: this.scrollContainer
     });
 
@@ -1641,6 +1645,39 @@ class PortfolioApp {
     startIdleRotation();
   }
 
+  /* ──────────────── 3D CERTIFICATIONS SPHERE ──────────────── */
+
+  setupCertificationsSphere() {
+    const sphere = document.getElementById('certifications-sphere');
+    if (!sphere) return;
+    
+    const items = sphere.querySelectorAll('.sphere-item');
+    const N = items.length;
+    if (N === 0) return;
+    
+    const updateSphere = () => {
+      const radius = window.innerWidth < 768 ? 160 : 260;
+      items.forEach((item, i) => {
+        // Fibonacci lattice placement
+        const y = 1 - (i / (N - 1)) * 2; // y goes from 1 to -1
+        const radiusAtY = Math.sqrt(1 - y * y); // radius at y
+        const theta = 2.399963229728653 * i; // golden angle
+        
+        const x = Math.cos(theta) * radiusAtY;
+        const z = Math.sin(theta) * radiusAtY;
+        
+        // Calculate rotation so the card faces outward from the center
+        const rotateY = Math.atan2(x, z) * (180 / Math.PI);
+        const rotateX = Math.asin(y) * (180 / Math.PI);
+        
+        item.style.transform = `translate3d(${x * radius}px, ${y * radius}px, ${z * radius}px) rotateY(${rotateY}deg) rotateX(${-rotateX}deg)`;
+      });
+    };
+
+    updateSphere();
+    window.addEventListener('resize', updateSphere);
+  }
+
   /* ──────────────── DYNAMIC CODING STATS FETCHER ──────────────── */
 
   updateCodingStats() {
@@ -1729,7 +1766,7 @@ class PortfolioApp {
       .catch(err => console.warn('LeetCode Profile Dynamic Sync Error:', err));
 
     // 2. Fetch GeeksforGeeks Stats
-    fetch('https://gfgstatscard.vercel.app/swetarfu1t?raw=true')
+    fetch('https://corsproxy.io/?' + encodeURIComponent('https://gfgstatscard.vercel.app/swetarfu1t?raw=true'))
       .then(res => {
         if (!res.ok) throw new Error('GFG Stats Fetch Failed');
         return res.json();
